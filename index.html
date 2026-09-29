@@ -7,15 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:#0b1120;color:#f1f5f9;min-height:100vh}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--s9);min-height:100vh}
 input,select,textarea,button{font-family:'Inter',sans-serif}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#00d4aa!important}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--card)}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:4px}
 #app{max-width:480px;margin:0 auto;padding-bottom:20px}
-.header{background:#0f172a;border-bottom:1px solid #1e293b;padding:12px 16px;position:sticky;top:0;z-index:100}
+.header{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 16px;position:sticky;top:0;z-index:100}
 .header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .logo{font-size:17px;font-weight:800;letter-spacing:-.5px}.logo span{color:#00d4aa}
-.header-date{font-size:10px;color:#475569;margin-top:1px}
+.header-date{font-size:10px;color:var(--s4);margin-top:1px}
 .header-badges{display:flex;gap:6px;align-items:center}
 .badge{border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700}
 .badge-fire{background:#f59e0b22;border:1px solid #f59e0b33;color:#f59e0b}
@@ -24,21 +24,21 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:#00d4aa!import
 .badge-xp .xp{font-size:11px;font-weight:800}
 .badge-focus{background:#6366f122;border:1px solid #6366f133;color:#a5b4fc;cursor:pointer;border:none;border-radius:8px}
 .tabs-bar{display:flex;gap:3px}
-.tab-btn{flex:1;padding:7px 2px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:#475569;font-size:9px;font-weight:700;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tab-btn{flex:1;padding:7px 2px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:var(--s4);font-size:9px;font-weight:700;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px}
 .tab-btn .ico{font-size:15px}
 .tab-btn.active{background:#00d4aa;color:#050d1a}
 .content{padding:16px}
 .page-title{font-size:19px;font-weight:800;margin-bottom:14px;letter-spacing:-.5px}
-.card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:12px}
-.card.purple{background:linear-gradient(135deg,#6366f10a,#0f172a);border-color:#6366f122}
-.card.teal{background:linear-gradient(135deg,#00d4aa0e,#0f172a)}
-.card.red{background:linear-gradient(135deg,#ef44440a,#0f172a);border-color:#ef444422}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+.card.purple{background:linear-gradient(135deg,#6366f10a,var(--card));border-color:#6366f122}
+.card.teal{background:linear-gradient(135deg,#00d4aa0e,var(--card))}
+.card.red{background:linear-gradient(135deg,#ef44440a,var(--card));border-color:#ef444422}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.bar-wrap{background:#1e293b;border-radius:99px;overflow:hidden}
+.bar-wrap{background:var(--bd);border-radius:99px;overflow:hidden}
 .bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
-.inp{background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#f1f5f9;padding:10px 12px;font-size:13px;width:100%}
-.inp::placeholder{color:#475569}
+.inp{background:var(--bd);border:1px solid var(--bd2);border-radius:8px;color:var(--s9);padding:10px 12px;font-size:13px;width:100%}
+.inp::placeholder{color:var(--s4)}
 textarea.inp{resize:none;line-height:1.6}
 select.inp{appearance:none;cursor:pointer}
 .btn{background:#00d4aa;color:#050d1a;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:opacity .2s}
@@ -46,102 +46,102 @@ select.inp{appearance:none;cursor:pointer}
 .btn.purple{background:#6366f1;color:#fff}
 .btn.red{background:#ef4444;color:#fff}
 .btn.amber{background:#f59e0b;color:#050d1a}
-.btn.sm{background:transparent;border:1px solid #1e293b;color:#64748b;border-radius:7px;padding:6px 10px;font-size:12px;width:auto}
+.btn.sm{background:transparent;border:1px solid var(--bd);color:var(--s5);border-radius:7px;padding:6px 10px;font-size:12px;width:auto}
 .btn.danger{background:transparent;border:1px solid #ef444433;color:#ef4444;font-size:12px;font-weight:600}
-.label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.sublabel{font-size:12px;color:#64748b;margin-bottom:6px}
+.label{font-size:11px;color:var(--s5);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sublabel{font-size:12px;color:var(--s5);margin-bottom:6px}
 .cat-dot{width:3px;height:16px;border-radius:2px;flex-shrink:0}
-.habit-item{display:flex;align-items:center;gap:12px;padding:14px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;margin-bottom:8px;transition:all .2s;cursor:pointer}
+.habit-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;transition:all .2s;cursor:pointer}
 .habit-item.done{border-color:#00d4aa44;background:#00d4aa08}
-.check{width:24px;height:24px;border-radius:7px;border:2px solid #334155;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;cursor:pointer}
+.check{width:24px;height:24px;border-radius:7px;border:2px solid var(--s3);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;cursor:pointer}
 .check.done{background:#00d4aa;border-color:#00d4aa}
 .check.done::after{content:'✓';font-size:13px;color:#050d1a;font-weight:900}
-.habit-name{font-size:14px;font-weight:600;color:#e2e8f0;transition:all .2s}
+.habit-name{font-size:14px;font-weight:600;color:var(--s8);transition:all .2s}
 .habit-name.done{color:#00d4aa;text-decoration:line-through}
-.habit-id{font-size:11px;color:#475569;margin-top:2px}
+.habit-id{font-size:11px;color:var(--s4);margin-top:2px}
 .xp-tag{font-size:11px;color:#00d4aa;font-weight:700;margin-left:auto;white-space:nowrap}
 .ring-wrap{position:relative;flex-shrink:0}
 .ring-wrap svg{transform:rotate(-90deg)}
 .ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
-.ring-pct{font-size:13px;font-weight:700;color:#f1f5f9}
+.ring-pct{font-size:13px;font-weight:700;color:var(--s9)}
 .modal-bg{position:fixed;inset:0;background:#000000bb;z-index:999;display:flex;align-items:flex-end;justify-content:center}
-.modal-box{background:#0f172a;border:1px solid #1e293b;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto}
+.modal-box{background:var(--card);border:1px solid var(--bd);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.modal-title{font-size:16px;font-weight:700;color:#f1f5f9}
-.modal-close{background:#1e293b;border:none;color:#94a3b8;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px}
+.modal-title{font-size:16px;font-weight:700;color:var(--s9)}
+.modal-close{background:var(--bd);border:none;color:var(--s6);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px}
 .form-row{margin-bottom:12px}
 .form-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
 .emoji-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
-.emoji-btn{font-size:20px;background:transparent;border:1.5px solid #1e293b;border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .2s}
+.emoji-btn{font-size:20px;background:transparent;border:1.5px solid var(--bd);border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .2s}
 .emoji-btn.sel{background:#00d4aa22;border-color:#00d4aa}
 .modal-actions{display:flex;gap:8px;margin-top:4px}
 #onboarding{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .ob-wrap{width:100%;max-width:420px}
 .ob-logo{text-align:center;margin-bottom:24px;font-size:22px;font-weight:800}
 .ob-progress{display:flex;gap:6px;margin-bottom:24px}
-.ob-bar{flex:1;height:3px;border-radius:99px;background:#1e293b;transition:background .3s}
+.ob-bar{flex:1;height:3px;border-radius:99px;background:var(--bd);transition:background .3s}
 .ob-bar.active{background:#00d4aa}
 .ob-step{display:none}.ob-step.active{display:block}
 .ob-emoji{font-size:52px;text-align:center;margin-bottom:16px}
-.ob-h{font-size:23px;font-weight:800;color:#f1f5f9;margin-bottom:8px}
-.ob-p{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:16px}
+.ob-h{font-size:23px;font-weight:800;color:var(--s9);margin-bottom:8px}
+.ob-p{color:var(--s5);font-size:14px;line-height:1.6;margin-bottom:16px}
 .goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.goal-btn{background:#1e293b;border:1.5px solid #2d3f55;border-radius:10px;padding:12px 10px;cursor:pointer;text-align:left;color:#94a3b8;font-size:13px;font-weight:600;transition:all .2s}
+.goal-btn{background:var(--bd);border:1.5px solid var(--bd2);border-radius:10px;padding:12px 10px;cursor:pointer;text-align:left;color:var(--s6);font-size:13px;font-weight:600;transition:all .2s}
 .goal-btn .ge{font-size:18px;display:block;margin-bottom:4px}
 .goal-btn.sel{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
-#focus-mode{position:fixed;inset:0;background:#050d1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
-.focus-close{position:absolute;top:20px;right:20px;background:#1e293b;border:none;color:#64748b;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:18px}
-.focus-label{font-size:13px;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:2px}
+#focus-mode{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.focus-close{position:absolute;top:20px;right:20px;background:var(--bd);border:none;color:var(--s5);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:18px}
+.focus-label{font-size:13px;color:var(--s5);margin-bottom:8px;text-transform:uppercase;letter-spacing:2px}
 .focus-ring{position:relative;margin-bottom:24px}
 .focus-ring svg{transform:rotate(-90deg)}
-.focus-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;color:#f1f5f9;letter-spacing:-2px}
+.focus-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;color:var(--s9);letter-spacing:-2px}
 .focus-btns{display:flex;gap:10px;margin-bottom:20px}
 .focus-presets{display:flex;gap:8px}
 .humor-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
 .humor-btn{font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:border .2s}
 .humor-btn.sel{border-color:#00d4aa}
-.entry-preview{font-size:12px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
-.entry-body{font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid #1e293b;padding-top:12px;margin-top:8px}
-.sub-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b}
-.sub-check{width:18px;height:18px;border-radius:4px;border:2px solid #334155;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s}
+.entry-preview{font-size:12px;color:var(--s4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
+.entry-body{font-size:13px;color:var(--s6);line-height:1.7;border-top:1px solid var(--bd);padding-top:12px;margin-top:8px}
+.sub-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+.sub-check{width:18px;height:18px;border-radius:4px;border:2px solid var(--s3);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s}
 .sub-check.done{border-color:#00d4aa;background:#00d4aa}
 .sub-check.done::after{content:'✓';font-size:10px;color:#050d1a;font-weight:900}
-.sub-text{flex:1;font-size:13px;color:#cbd5e1}
-.sub-text.done{color:#64748b;text-decoration:line-through}
-.del-btn{background:none;border:none;color:#475569;cursor:pointer;font-size:15px;padding:2px 4px}
+.sub-text{flex:1;font-size:13px;color:var(--s7)}
+.sub-text.done{color:var(--s5);text-decoration:line-through}
+.del-btn{background:none;border:none;color:var(--s4);cursor:pointer;font-size:15px;padding:2px 4px}
 .cat-badge{border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;display:inline-block}
 .section-cat{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .section-cat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
-.empty-state{text-align:center;padding:40px 20px;color:#475569}
+.empty-state{text-align:center;padding:40px 20px;color:var(--s4)}
 .empty-state .es-ico{font-size:48px;margin-bottom:12px}
-.empty-state .es-t{font-size:15px;color:#64748b}
-.empty-state .es-s{font-size:13px;color:#475569;margin-top:4px}
+.empty-state .es-t{font-size:15px;color:var(--s5)}
+.empty-state .es-s{font-size:13px;color:var(--s4);margin-top:4px}
 /* ─── FINANZAS específico ─── */
 .fin-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
-.fin-tab{padding:7px 14px;border-radius:8px;border:1px solid #1e293b;background:transparent;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.fin-tab{padding:7px 14px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--s5);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
 .fin-tab.active{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
-.tx-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1e293b}
+.tx-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--bd)}
 .tx-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .tx-info{flex:1;min-width:0}
-.tx-name{font-size:13px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tx-meta{font-size:11px;color:#475569;margin-top:1px}
+.tx-name{font-size:13px;font-weight:600;color:var(--s8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:11px;color:var(--s4);margin-top:1px}
 .tx-amount{font-size:14px;font-weight:700;white-space:nowrap}
 .tx-amount.ingreso{color:#00d4aa}
 .tx-amount.gasto{color:#ef4444}
-.deuda-item{padding:14px 0;border-bottom:1px solid #1e293b}
-.deuda-name{font-size:14px;font-weight:600;color:#f1f5f9;margin-bottom:4px}
+.deuda-item{padding:14px 0;border-bottom:1px solid var(--bd)}
+.deuda-name{font-size:14px;font-weight:600;color:var(--s9);margin-bottom:4px}
 .pill{display:inline-block;border-radius:99px;padding:2px 8px;font-size:10px;font-weight:700}
 .pill-red{background:#ef444422;color:#ef4444}
 .pill-amber{background:#f59e0b22;color:#f59e0b}
 .pill-green{background:#00d4aa22;color:#00d4aa}
 .tipo-sel{display:flex;gap:6px;margin-bottom:12px}
-.tipo-btn{flex:1;padding:9px;border-radius:8px;border:1px solid #1e293b;background:transparent;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tipo-btn{flex:1;padding:9px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--s5);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
 .tipo-btn.sel-ingreso{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
 .tipo-btn.sel-gasto{background:#ef444422;border-color:#ef4444;color:#ef4444}
 .week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.week-nav button{background:#1e293b;border:none;color:#94a3b8;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px}
-.week-nav span{font-size:13px;font-weight:600;color:#f1f5f9}
+.week-nav button{background:var(--bd);border:none;color:var(--s6);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px}
+.week-nav span{font-size:13px;font-weight:600;color:var(--s9)}
 /* misc */
 .hidden{display:none!important}
 .flex{display:flex}.flex-between{display:flex;justify-content:space-between;align-items:center}
@@ -151,32 +151,32 @@ select.inp{appearance:none;cursor:pointer}
 .mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}
 .f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}.f13{font-size:13px}.f14{font-size:14px}.f15{font-size:15px}.f20{font-size:20px}.f22{font-size:22px}.f30{font-size:30px}
 .fw7{font-weight:700}.fw8{font-weight:800}
-.c-teal{color:#00d4aa}.c-purple{color:#6366f1}.c-amber{color:#f59e0b}.c-cyan{color:#22d3ee}.c-pink{color:#ec4899}.c-muted{color:#64748b}.c-dim{color:#475569}.c-main{color:#f1f5f9}.c-sub{color:#94a3b8}.c-mid{color:#cbd5e1}.c-red{color:#ef4444}
+.c-teal{color:#00d4aa}.c-purple{color:#6366f1}.c-amber{color:#f59e0b}.c-cyan{color:#22d3ee}.c-pink{color:#ec4899}.c-muted{color:var(--s5)}.c-dim{color:var(--s4)}.c-main{color:var(--s9)}.c-sub{color:var(--s6)}.c-mid{color:var(--s7)}.c-red{color:#ef4444}
 .text-center{text-align:center}.w100{width:100%}.italic{font-style:italic}
 .ls1{letter-spacing:1px}.ls15{letter-spacing:1.5px}
 </style>
 <style>
 .mn-day{padding:12px 14px}.mn-day-t{font-size:14px;font-weight:800;color:#00d4aa;margin-bottom:6px}
-.mn-row{display:flex;gap:10px;padding:8px 0;border-top:1px solid #1e293b}
-.mn-l{width:66px;flex-shrink:0;font-size:11px;font-weight:600;color:#64748b;padding-top:2px}
-.mn-n{font-size:13px;font-weight:600;color:#e2e8f0}.mn-row.snack .mn-n{font-weight:500;color:#94a3b8}
-.mn-d{font-size:11px;color:#64748b;line-height:1.5;margin-top:2px}
-.mn-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #1e293b;cursor:pointer;font-size:13px;color:#cbd5e1}
+.mn-row{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--bd)}
+.mn-l{width:66px;flex-shrink:0;font-size:11px;font-weight:600;color:var(--s5);padding-top:2px}
+.mn-n{font-size:13px;font-weight:600;color:var(--s8)}.mn-row.snack .mn-n{font-weight:500;color:var(--s6)}
+.mn-d{font-size:11px;color:var(--s5);line-height:1.5;margin-top:2px}
+.mn-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--bd);cursor:pointer;font-size:13px;color:var(--s7)}
 .mn-item .check{width:20px;height:20px;border-radius:6px}.mn-add{display:flex;gap:8px;margin-top:10px}.mn-add .inp{padding:8px 10px}.mn-add .btn.sm{padding:6px 14px;font-size:16px}
-.mn-item.done span{color:#475569;text-decoration:line-through}
+.mn-item.done span{color:var(--s4);text-decoration:line-through}
 </style>
 <style>
 .cs-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;transition:border-color .2s}
 .cs-btn:hover,.cs-btn:focus-visible{border-color:#00d4aa;outline:none}
 .cs-bg{position:fixed;inset:0;background:#000000aa;z-index:1200;display:flex;align-items:flex-end;justify-content:center;animation:csFade .18s ease}
-.cs-box{background:#0f172a;border:1px solid #1e293b;border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:70vh;padding:8px 14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;animation:csUp .22s ease}
-.cs-grab{width:38px;height:4px;border-radius:4px;background:#334155;margin:4px auto 12px}
-.cs-title{font-size:13px;font-weight:700;color:#94a3b8;margin:0 6px 10px}
+.cs-box{background:var(--card);border:1px solid var(--bd);border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:70vh;padding:8px 14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;animation:csUp .22s ease}
+.cs-grab{width:38px;height:4px;border-radius:4px;background:var(--s3);margin:4px auto 12px}
+.cs-title{font-size:13px;font-weight:700;color:var(--s6);margin:0 6px 10px}
 .cs-list{overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-.cs-opt{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:#cbd5e1;font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:background .15s}
-.cs-opt:hover{background:#1e293b}
+.cs-opt{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--s7);font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:background .15s}
+.cs-opt:hover{background:var(--bd)}
 .cs-opt.sel{background:#00d4aa14;border-color:#00d4aa55;color:#00d4aa;font-weight:700}
-.cs-opt i{width:20px;height:20px;border-radius:50%;border:2px solid #334155;flex-shrink:0;position:relative}
+.cs-opt i{width:20px;height:20px;border-radius:50%;border:2px solid var(--s3);flex-shrink:0;position:relative}
 .cs-opt.sel i{background:#00d4aa;border-color:#00d4aa}
 .cs-opt.sel i::after{content:'';position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #050d1a;border-width:0 2px 2px 0;transform:rotate(45deg)}
 @keyframes csUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
@@ -184,17 +184,25 @@ select.inp{appearance:none;cursor:pointer}
 @media (prefers-reduced-motion:reduce){.cs-bg,.cs-box{animation:none}}
 </style>
 <style>
-.dia-add{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#94a3b8}
-.dia-prev{position:relative}.dia-prev img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid #1e293b}
-.dia-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:#000000aa;color:#f1f5f9;font-size:16px;cursor:pointer}
-.dia-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid #1e293b}
-.dia-img{display:block;width:100%;border-radius:10px;margin-top:10px;border:1px solid #1e293b}
+.dia-add{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--s6)}
+.dia-prev{position:relative}.dia-prev img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid var(--bd)}
+.dia-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:#000000aa;color:var(--s9);font-size:16px;cursor:pointer}
+.dia-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--bd)}
+.dia-img{display:block;width:100%;border-radius:10px;margin-top:10px;border:1px solid var(--bd)}
 </style>
 <style>
 .agua{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
-.vaso{padding:8px 0;border-radius:8px;border:1px solid #1e293b;background:transparent;font-size:16px;opacity:.3;cursor:pointer;transition:all .15s}
+.vaso{padding:8px 0;border-radius:8px;border:1px solid var(--bd);background:transparent;font-size:16px;opacity:.3;cursor:pointer;transition:all .15s}
 .vaso.on{opacity:1;background:#22d3ee22;border-color:#22d3ee55}
 .pr-inp{width:100px;padding:6px 8px;font-size:12px;text-align:right}
+</style>
+<script>(function(){try{var t=JSON.parse(localStorage.getItem('lifeos_theme'))||'dark';document.documentElement.dataset.theme=t;}catch(e){}})();</script>
+<style>
+:root{--bg:#0b1120;--card:#0f172a;--bd:#1e293b;--bd2:#2d3f55;--s3:#334155;--s4:#475569;--s5:#64748b;--s6:#94a3b8;--s7:#cbd5e1;--s8:#e2e8f0;--s9:#f1f5f9;color-scheme:dark}
+html[data-theme=light]{--bg:#f3f5f9;--card:#ffffff;--bd:#e3e8f0;--bd2:#cfd8e3;--s3:#cbd5e1;--s4:#94a3b8;--s5:#64748b;--s6:#475569;--s7:#334155;--s8:#1e293b;--s9:#0f172a;color-scheme:light}
+html[data-theme=light] .c-teal,html[data-theme=light] .habit-name.done,html[data-theme=light] .fin-tab.active,html[data-theme=light] .cs-opt.sel,html[data-theme=light] .mn-day-t,html[data-theme=light] .xp-tag{color:#00967a}
+html[data-theme=light] .c-purple,html[data-theme=light] .badge-focus{color:#4f46e5}
+html[data-theme=light] .card{box-shadow:0 1px 2px #0f172a10}
 </style>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#0b1120"/>
@@ -257,10 +265,7 @@ select.inp{appearance:none;cursor:pointer}
         <div class="header-badges">
           <button class="badge badge-focus" onclick="openFocus()">🎯 Enfoque</button>
           <div class="badge badge-fire">🔥 <span id="hdr-racha">0</span></div>
-          <div class="badge badge-xp">
-            <div class="lv">NIV <span id="hdr-niv">1</span></div>
-            <div class="xp"><span id="hdr-xp">0</span>XP</div>
-          </div>
+          <button class="badge badge-focus" id="theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">☀️</button>
         </div>
       </div>
       <div class="tabs-bar">
@@ -289,7 +294,7 @@ select.inp{appearance:none;cursor:pointer}
   <div class="focus-label">Modo Enfoque</div>
   <div class="focus-ring">
     <svg width="200" height="200">
-      <circle cx="100" cy="100" r="88" fill="none" stroke="#1e293b" stroke-width="10"/>
+      <circle cx="100" cy="100" r="88" fill="none" stroke="var(--bd)" stroke-width="10"/>
       <circle id="focus-circle" cx="100" cy="100" r="88" fill="none" stroke="#6366f1" stroke-width="10" stroke-dasharray="0 553" stroke-linecap="round"/>
     </svg>
     <div class="focus-time" id="focus-time">25:00</div>
@@ -334,7 +339,6 @@ let state={
   user: ls('user',null),
   habitos: ls('habitos',[]),
   metas: ls('metas',[]),
-  xp: ls('xp',0),
   comp: ls('comp',{}),
   diario: ls('diario',[]),
   menu: ls('menu',{sem:1,vista:'menu',chk:{}}),
@@ -349,7 +353,6 @@ let state={
 function save(k){lsSet(k,state[k]);}
 function nid(a){return a.length?Math.max(...a.map(x=>x.id))+1:1;}
 function today(){return new Date().toISOString().slice(0,10);}
-function emojiLevel(n){return n>=100?'🏆':n>=75?'🔥':n>=50?'⚡':n>=25?'🌱':'💤';}
 function fmt(n){return '$'+Number(n||0).toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:2});}
 
 const CATS_H=['Salud','Mente','Trabajo','Relaciones','Dinero','Crecimiento'];
@@ -362,7 +365,7 @@ const HUMORES=['😣','😔','😐','😊','🤩'];
 const CUENTAS=['TDC Nu','TDC Didi','Débito Nu','Débito Bakaool','Mercado Pago Crédito','Banorte','Efectivo'];
 const CATS_TX=['Supermercado/Despensa','Gasolina/Transporte','Entretenimiento/Salidas','Restaurantes/Comida','Suscripciones','Servicios/Hogar','Ropa/Compras','Salud/Farmacia','Pago Préstamo','Otro'];
 const PRESTAMOS=['Nu Préstamo','Didi Préstamo','Nu TDC','Mercado Pago Crédito','Didi TDC'];
-const CAT_TX_COLOR={'Supermercado/Despensa':'#00d4aa','Gasolina/Transporte':'#f59e0b','Entretenimiento/Salidas':'#a78bfa','Restaurantes/Comida':'#ec4899','Suscripciones':'#6366f1','Servicios/Hogar':'#22d3ee','Ropa/Compras':'#f97316','Salud/Farmacia':'#10b981','Pago Préstamo':'#ef4444','Otro':'#64748b'};
+const CAT_TX_COLOR={'Supermercado/Despensa':'#00d4aa','Gasolina/Transporte':'#f59e0b','Entretenimiento/Salidas':'#a78bfa','Restaurantes/Comida':'#ec4899','Suscripciones':'#6366f1','Servicios/Hogar':'#22d3ee','Ropa/Compras':'#f97316','Salud/Farmacia':'#10b981','Pago Préstamo':'#ef4444','Otro':'var(--s5)'};
 const CAT_TX_EMO={'Supermercado/Despensa':'🛒','Gasolina/Transporte':'⛽','Entretenimiento/Salidas':'🎉','Restaurantes/Comida':'🍽️','Suscripciones':'📱','Servicios/Hogar':'🏠','Ropa/Compras':'👕','Salud/Farmacia':'💊','Pago Préstamo':'💸','Otro':'📦'};
 
 // estado UI finanzas
@@ -377,14 +380,14 @@ function ring(pct,size=72,sw=6,color='#00d4aa'){
   const r=(size-sw*2)/2,c=2*Math.PI*r,d=(pct/100)*c;
   return `<div class="ring-wrap" style="width:${size}px;height:${size}px">
     <svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
-      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#1e293b" stroke-width="${sw}"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--bd)" stroke-width="${sw}"/>
       <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
         stroke-dasharray="${d} ${c}" stroke-linecap="round"/>
     </svg>
     <div class="ring-label"><span class="ring-pct">${pct}%</span></div>
   </div>`;
 }
-function catBadge(cat){const col=CCAT[cat]||'#94a3b8';return `<span class="cat-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${cat}</span>`;}
+function catBadge(cat){const col=CCAT[cat]||'var(--s6)';return `<span class="cat-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${cat}</span>`;}
 
 // ══ RACHA ══════════════════════════════════════════════════════════════════
 function calcRacha(){
@@ -396,11 +399,12 @@ function calcRacha(){
 }
 
 // ══ HEADER ══════════════════════════════════════════════════════════════════
+function setTheme(t){document.documentElement.dataset.theme=t;lsSet('theme',t);const b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'☀️':'🌙';const m=document.querySelector('meta[name=theme-color]');if(m)m.content=t==='dark'?'#0b1120':'#f3f5f9';}
+function toggleTheme(){setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');}
 function updateHeader(){
-  const racha=calcRacha(),xp=state.xp,niv=Math.floor(xp/100)+1;
+  setTheme(document.documentElement.dataset.theme||'dark');
+  const racha=calcRacha();
   document.getElementById('hdr-racha').textContent=racha;
-  document.getElementById('hdr-xp').textContent=xp;
-  document.getElementById('hdr-niv').textContent=niv;
   document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
 }
 
@@ -423,13 +427,12 @@ function renderTab(tab){
 
 // ══ INICIO ══════════════════════════════════════════════════════════════════
 function renderInicio(){
-  const{habitos,metas,xp,comp,diario,user,txs,ingresos}=state;
+  const{habitos,metas,comp,diario,user,txs,ingresos}=state;
   const td=today(),racha=calcRacha();
   const hComp=habitos.filter(h=>comp[h.id]===td).length;
   const hPct=habitos.length?Math.round(hComp/habitos.length*100):0;
   const mComp=metas.filter(m=>m.submetas.length&&m.submetas.every(s=>s.completado)).length;
   const mPct=metas.length?Math.round(mComp/metas.length*100):0;
-  const niv=Math.floor(xp/100)+1,xpN=xp%100;
   // finanzas este mes
   const mes=td.slice(0,7);
   const gastosMes=txs.filter(t=>t.tipo==='gasto'&&t.fecha.startsWith(mes)).reduce((s,t)=>s+t.monto,0);
@@ -448,10 +451,9 @@ function renderInicio(){
     <div class="card"><div class="f20 mb4">${balance>=0?'📈':'📉'}</div><div class="f20 fw8" style="color:${balance>=0?'#00d4aa':'#ef4444'}">${fmt(balance)}</div><div class="f11 c-muted">Balance del mes</div></div>
   </div>`;
   html+=extrasInicio();
-  html+=`<div class="card mb12"><div class="flex-between mb6"><span class="f14 fw7 c-main">Nivel ${niv}</span><span class="f13 fw7 c-purple">${xp} XP</span></div>${bar(xpN,'#6366f1',6)}<div class="f11 c-dim mt4">${xpN}/100 XP → nivel ${niv+1}</div></div>`;
   if(catData.length){
     html+=`<div class="card mb12"><div class="label mb12">Rendimiento por área</div>
-      ${catData.map(({cat,pct})=>`<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${cat}</span><span class="f12 fw7" style="color:${CCAT[cat]}">${emojiLevel(pct)} ${pct}%</span></div>${bar(pct,CCAT[cat],5)}</div>`).join('')}
+      ${catData.map(({cat,pct})=>`<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${cat}</span><span class="f12 fw7" style="color:${CCAT[cat]}">${pct}%</span></div>${bar(pct,CCAT[cat],5)}</div>`).join('')}
     </div>`;
   }
   html+=`<div class="card"><div class="label mb14">Visión global</div><div style="display:flex;justify-content:space-around">
@@ -474,7 +476,7 @@ function renderHabitos(){
     <div class="card"><div class="label">Racha</div><div class="f30 fw8 c-amber">🔥 ${racha}</div><div class="f11 c-dim">días seguidos</div></div>
     <div class="card"><div class="label">Hoy</div><div class="f30 fw8 c-teal">${pct}%</div><div class="f11 c-dim">${completados}/${total} hábitos</div></div>
   </div>
-  <div class="card mb14"><div class="flex-between mb8"><span class="f13 c-sub">Progreso del día</span><span class="f13 fw7 c-teal">${emojiLevel(pct)} ${completados} de ${total}</span></div>${bar(pct,'#00d4aa',10)}</div>`;
+  <div class="card mb14"><div class="flex-between mb8"><span class="f13 c-sub">Progreso del día</span><span class="f13 fw7 c-teal">${completados} de ${total}</span></div>${bar(pct,'#00d4aa',10)}</div>`;
   if(!habitos.length)html+=`<div class="empty-state"><div class="es-ico">🌱</div><div class="es-t">Aún no tienes hábitos.</div></div>`;
   cats.forEach(cat=>{
     const col=CCAT[cat]||'#00d4aa';
@@ -485,7 +487,6 @@ function renderHabitos(){
         <div class="check${done?' done':''}"></div>
         <span style="font-size:18px;flex-shrink:0">${h.emoji||'✅'}</span>
         <div style="flex:1"><div class="habit-name${done?' done':''}">${h.nombre}</div>${h.identidad?`<div class="habit-id">${h.identidad}</div>`:''}</div>
-        ${done?'<span class="xp-tag">+10 XP</span>':''}
         <button class="btn sm" onclick="event.stopPropagation();editHabito(${h.id})" style="padding:5px 9px">✏️</button>
       </div>`;
     });
@@ -496,10 +497,9 @@ function renderHabitos(){
 }
 function toggleHabito(id){
   const td=today(),done=state.comp[id]===td;
-  if(done){delete state.comp[id];state.xp=Math.max(0,state.xp-10);}
-  else{state.comp[id]=td;state.xp+=10;}
+  if(done)delete state.comp[id];else state.comp[id]=td;
   const hs=state.hist[td]||[];state.hist[td]=done?hs.filter(x=>x!==id):[...new Set([...hs,id])];save('hist');
-  save('comp');save('xp');updateHeader();renderHabitos();
+  save('comp');updateHeader();renderHabitos();
 }
 function newHabito(){openHabitoModal(null);}
 function editHabito(id){openHabitoModal(state.habitos.find(h=>h.id===id));}
@@ -541,7 +541,7 @@ function renderMetas(){
     html+=`<div class="card mb12">
       <div class="flex gap12 mb10" style="align-items:flex-start">
         ${ring(pct,64,5,col)}
-        <div style="flex:1"><div class="mb6">${catBadge(meta.categoria)}${meta.deadline?` <span class="cat-badge" style="background:#1e293b;color:#64748b">📅 ${meta.deadline}</span>`:''}</div>
+        <div style="flex:1"><div class="mb6">${catBadge(meta.categoria)}${meta.deadline?` <span class="cat-badge" style="background:var(--bd);color:var(--s5)">📅 ${meta.deadline}</span>`:''}</div>
           <div class="flex gap8" style="align-items:center"><span style="font-size:18px">${meta.emoji||'🎯'}</span><span class="f15 fw7 c-main">${meta.titulo}</span></div>
           ${meta.descripcion?`<div class="f12 c-muted mt4">${meta.descripcion}</div>`:''}</div>
         <button class="btn sm" onclick="editMeta(${meta.id})" style="padding:5px 8px;flex-shrink:0">✏️</button>
@@ -653,7 +653,7 @@ function renderFinResumen(){
     ${catArr.length===0?'<div class="f13 c-muted text-center" style="padding:16px">Sin gastos este mes</div>':''}
     ${catArr.map(([cat,monto])=>{
       const pct=totalGasto?Math.round(monto/totalGasto*100):0;
-      const col=CAT_TX_COLOR[cat]||'#64748b';
+      const col=CAT_TX_COLOR[cat]||'var(--s5)';
       return `<div class="mb10">
         <div class="flex-between mb4">
           <span class="f13 c-mid">${CAT_TX_EMO[cat]||'📦'} ${cat}</span>
@@ -666,7 +666,7 @@ function renderFinResumen(){
   <div class="card mb12">
     <div class="label mb12">Por tarjeta / cuenta</div>
     ${Object.entries(porCuenta).sort((a,b)=>b[1]-a[1]).map(([cuenta,monto])=>`
-      <div class="flex-between" style="padding:8px 0;border-bottom:1px solid #1e293b">
+      <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--bd)">
         <span class="f13 c-mid">💳 ${cuenta}</span>
         <span class="f13 fw7 c-red">${fmt(monto)}</span>
       </div>`).join('') || '<div class="f13 c-muted text-center" style="padding:12px">Sin datos</div>'}
@@ -721,7 +721,7 @@ function renderFinSemana(){
     const isToday=key===today();
     html+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
       <div style="width:100%;background:${isToday?'#00d4aa':'#6366f1'};height:${h}px;border-radius:4px 4px 0 0;opacity:${monto?1:.2}"></div>
-      <div class="f10" style="color:${isToday?'#00d4aa':'#64748b'}">${dias[i]}</div>
+      <div class="f10" style="color:${isToday?'#00d4aa':'var(--s5)'}">${dias[i]}</div>
     </div>`;
   }
   html+=`</div></div>`;
@@ -734,14 +734,14 @@ function renderFinSemana(){
     const col=esIngreso?'#00d4aa':'#ef4444';
     const emo=esIngreso?'💵':(CAT_TX_EMO[cat]||'📦');
     html+=`<div class="tx-item">
-      <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'#64748b')}22">${emo}</div>
+      <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'var(--s5)')}22">${emo}</div>
       <div class="tx-info">
         <div class="tx-name">${t.nota||cat}</div>
         <div class="tx-meta">${t.cuenta||''} · ${new Date(t.fecha+'T12:00:00').toLocaleDateString('es',{weekday:'short',day:'numeric'})}</div>
       </div>
       <div>
         <div class="tx-amount ${esIngreso?'ingreso':'gasto'}">${esIngreso?'+':'-'}${fmt(t.monto)}</div>
-        <button class="del-btn" onclick="${esIngreso?`deleteIngreso(${t.id})`:`deleteTx(${t.id})`}" style="float:right;color:#475569">×</button>
+        <button class="del-btn" onclick="${esIngreso?`deleteIngreso(${t.id})`:`deleteTx(${t.id})`}" style="float:right;color:var(--s4)">×</button>
       </div>
     </div>`;
   });
@@ -783,7 +783,7 @@ function renderFinMes(){
     <div class="label mb10">Por categoría</div>
     ${catArr.length?catArr.map(([cat,monto])=>{
       const pct=totalG?Math.round(monto/totalG*100):0;
-      const col=CAT_TX_COLOR[cat]||'#64748b';
+      const col=CAT_TX_COLOR[cat]||'var(--s5)';
       return `<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${CAT_TX_EMO[cat]||'📦'} ${cat}</span><span class="f12 fw7" style="color:${col}">${fmt(monto)}</span></div>${bar(pct,col,5)}</div>`;
     }).join(''):'<div class="f13 c-muted text-center" style="padding:12px">Sin gastos</div>'}
   </div>
@@ -795,7 +795,7 @@ function renderFinMes(){
       const cat=t.categoria||t.tipo_ingreso||'Ingreso';
       const emo=esIngreso?'💵':(CAT_TX_EMO[cat]||'📦');
       return `<div class="tx-item">
-        <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'#64748b')}22">${emo}</div>
+        <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'var(--s5)')}22">${emo}</div>
         <div class="tx-info"><div class="tx-name">${t.nota||cat}</div><div class="tx-meta">${t.cuenta||''} · ${new Date(t.fecha+'T12:00:00').toLocaleDateString('es',{day:'numeric',month:'short'})}</div></div>
         <div><div class="tx-amount ${esIngreso?'ingreso':'gasto'}">${esIngreso?'+':'-'}${fmt(t.monto)}</div>
           <button class="del-btn" onclick="${esIngreso?`deleteIngreso(${t.id})`:`deleteTx(${t.id})`}" style="float:right">×</button></div>
@@ -894,7 +894,7 @@ function renderFinIngresos(){
     <div class="f11 c-muted mt4">${ingMes.length} registros</div>
   </div>
   ${Object.entries(porTipo).length?`<div class="card mb12"><div class="label mb10">Por tipo</div>
-    ${Object.entries(porTipo).map(([tipo,m])=>`<div class="flex-between" style="padding:8px 0;border-bottom:1px solid #1e293b">
+    ${Object.entries(porTipo).map(([tipo,m])=>`<div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--bd)">
       <span class="f13 c-mid">${tipo==='Sueldo'?'💼':tipo==='Bono'?'🎁':'💰'} ${tipo}</span>
       <span class="f13 fw7 c-teal">${fmt(m)}</span>
     </div>`).join('')}
@@ -1201,7 +1201,7 @@ window.onload=()=>{
 document.head.insertAdjacentHTML('beforeend',`<style>.f18{font-size:18px}.mb20{margin-bottom:20px}.c-red{color:#ef4444}</style>`);
 // ══ SELECTOR PERSONALIZADO ══════════════════════════════════════════════════
 (function(){
-  const chev='<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>';
+  const chev='<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="var(--s5)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>';
   function close(){const o=document.getElementById('cs-sheet');if(o)o.remove();document.removeEventListener('keydown',esc);}
   function esc(e){if(e.key==='Escape')close();}
   function openSheet(sel,sync){
