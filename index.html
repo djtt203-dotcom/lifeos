@@ -204,6 +204,14 @@ html[data-theme=light] .c-teal,html[data-theme=light] .habit-name.done,html[data
 html[data-theme=light] .c-purple,html[data-theme=light] .badge-focus{color:#4f46e5}
 html[data-theme=light] .card{box-shadow:0 1px 2px #0f172a10}
 </style>
+<style>
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-h{font-size:10px;color:var(--s5);text-align:center;font-weight:700;padding:4px 0}
+.cal-d{aspect-ratio:1;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--s8);font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.cal-d.today{border-color:#00d4aa}.cal-d.sel{background:#00d4aa22}
+.cal-dots{display:flex;gap:2px;height:5px}.cal-dots i{width:5px;height:5px;border-radius:50%}
+.ev-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--bd)}
+</style>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#0b1120"/>
 </head>
@@ -275,6 +283,7 @@ html[data-theme=light] .card{box-shadow:0 1px 2px #0f172a10}
         <button class="tab-btn" onclick="showTab('dinero',this)"><span class="ico">💳</span>Dinero</button>
         <button class="tab-btn" onclick="showTab('diario',this)"><span class="ico">📓</span>Diario</button>
         <button class="tab-btn" onclick="showTab('menu',this)"><span class="ico">🍽️</span>Menú</button>
+        <button class="tab-btn" onclick="showTab('agenda',this)"><span class="ico">📆</span>Agenda</button>
       </div>
     </div>
     <div class="content">
@@ -284,6 +293,7 @@ html[data-theme=light] .card{box-shadow:0 1px 2px #0f172a10}
       <div id="page-dinero" class="hidden"></div>
       <div id="page-diario" class="hidden"></div>
       <div id="page-menu" class="hidden"></div>
+      <div id="page-agenda" class="hidden"></div>
     </div>
   </div>
 </div>
@@ -345,6 +355,7 @@ let state={
   agua: ls('agua',{}),
   presup: ls('presup',{}),
   hist: ls('hist',{}),
+  eventos: ls('eventos',[]),
   // FINANZAS
   txs: ls('txs',[]),        // transacciones: {id,fecha,tipo,categoria,cuenta,monto,nota}
   deudas: ls('deudas',[]),  // {id,nombre,prestamista,monto,pagado,deadline,tipo}
@@ -352,7 +363,8 @@ let state={
 };
 function save(k){lsSet(k,state[k]);}
 function nid(a){return a.length?Math.max(...a.map(x=>x.id))+1:1;}
-function today(){return new Date().toISOString().slice(0,10);}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function today(){return ymd(new Date());}
 function fmt(n){return '$'+Number(n||0).toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:2});}
 
 const CATS_H=['Salud','Mente','Trabajo','Relaciones','Dinero','Crecimiento'];
@@ -393,7 +405,7 @@ function catBadge(cat){const col=CCAT[cat]||'var(--s6)';return `<span class="cat
 function calcRacha(){
   if(!state.habitos.length)return 0;
   let r=0,d=new Date();d.setDate(d.getDate()-1);
-  while(true){const dia=d.toISOString().slice(0,10);if(state.habitos.some(h=>state.comp[h.id]===dia)){r++;d.setDate(d.getDate()-1);}else break;}
+  while(true){const dia=ymd(d);if(state.habitos.some(h=>state.comp[h.id]===dia)){r++;d.setDate(d.getDate()-1);}else break;}
   if(state.habitos.some(h=>state.comp[h.id]===today()))r++;
   return r;
 }
@@ -423,6 +435,7 @@ function renderTab(tab){
   else if(tab==='dinero')renderDinero();
   else if(tab==='diario')renderDiario();
   else if(tab==='menu')renderMenu();
+  else if(tab==='agenda')renderAgenda();
 }
 
 // ══ INICIO ══════════════════════════════════════════════════════════════════
@@ -450,6 +463,7 @@ function renderInicio(){
     <div class="card"><div class="f20 mb4">💸</div><div class="f20 fw8 c-red">${fmt(gastosMes)}</div><div class="f11 c-muted">Gastos este mes</div></div>
     <div class="card"><div class="f20 mb4">${balance>=0?'📈':'📉'}</div><div class="f20 fw8" style="color:${balance>=0?'#00d4aa':'#ef4444'}">${fmt(balance)}</div><div class="f11 c-muted">Balance del mes</div></div>
   </div>`;
+  html+=proximosCard();
   html+=extrasInicio();
   if(catData.length){
     html+=`<div class="card mb12"><div class="label mb12">Rendimiento por área</div>
@@ -603,6 +617,7 @@ function renderDinero(){
     <button class="fin-tab${finTab==='semana'?' active':''}" onclick="setFinTab('semana')">📅 Semana</button>
     <button class="fin-tab${finTab==='mes'?' active':''}" onclick="setFinTab('mes')">🗓 Mes</button>
     <button class="fin-tab${finTab==='deudas'?' active':''}" onclick="setFinTab('deudas')">💸 Deudas</button>
+    <button class="fin-tab${finTab==='pagos'?' active':''}" onclick="setFinTab('pagos')">🔁 Pagos</button>
     <button class="fin-tab${finTab==='ingresos'?' active':''}" onclick="setFinTab('ingresos')">💵 Ingresos</button>
   </div>`;
 
@@ -610,6 +625,7 @@ function renderDinero(){
   else if(finTab==='semana') html+=renderFinSemana();
   else if(finTab==='mes') html+=renderFinMes();
   else if(finTab==='deudas') html+=renderFinDeudas();
+  else if(finTab==='pagos') html+=renderFinPagos();
   else if(finTab==='ingresos') html+=renderFinIngresos();
 
   document.getElementById('page-dinero').innerHTML=html;
@@ -684,7 +700,7 @@ function getWeekRange(offset){
   const day=now.getDay()||7;
   const mon=new Date(now);mon.setDate(now.getDate()-day+1+offset*7);
   const sun=new Date(mon);sun.setDate(mon.getDate()+6);
-  return{start:mon.toISOString().slice(0,10),end:sun.toISOString().slice(0,10),mon,sun};
+  return{start:ymd(mon),end:ymd(sun),mon,sun};
 }
 function renderFinSemana(){
   const{start,end,mon,sun}=getWeekRange(weekOffset);
@@ -715,7 +731,7 @@ function renderFinSemana(){
   html+=`<div class="card mb12"><div class="label mb10">Gastos por día</div><div style="display:flex;align-items:flex-end;gap:6px;height:60px">`;
   for(let i=0;i<7;i++){
     const d=new Date(mon);d.setDate(mon.getDate()+i);
-    const key=d.toISOString().slice(0,10);
+    const key=ymd(d);
     const monto=porDia[key]||0;
     const h=monto?Math.max(4,Math.round(monto/maxDia*50)):2;
     const isToday=key===today();
@@ -1102,7 +1118,7 @@ function restaurarLista(w){if(confirm('¿Volver a la lista original de la semana
 
 // ══ EXTRAS: HOY, AGUA, RESUMEN, PRESUPUESTO ═════════════════════════════════
 const AGUA_META=12; // vasos de 250 ml = 3 L
-function diasAtras(n){return new Date(Date.now()-n*864e5).toISOString().slice(0,10);}
+function diasAtras(n){return ymd(new Date(Date.now()-n*864e5));}
 function gastoPorCat(){const mes=today().slice(0,7),o={};state.txs.filter(t=>t.tipo==='gasto'&&t.fecha.startsWith(mes)).forEach(t=>{o[t.categoria]=(o[t.categoria]||0)+t.monto;});return o;}
 function extrasInicio(){
   const td=today(),m=state.menu,hy=m.hoy||{sem:1,dia:1},dia=MENU[hy.sem-1][hy.dia-1];
@@ -1135,6 +1151,86 @@ function registrarCompra(w){
   state.txs.push({id:nid(state.txs),tipo:'gasto',categoria:'Supermercado/Despensa',cuenta:'Efectivo',monto,nota:'Compras semana '+w,fecha:today()});
   save('txs');alert('Gasto de '+fmt(monto)+' registrado en Dinero.');
 }
+
+// ══ AGENDA / CALENDARIO ═════════════════════════════════════════════════════
+const EV_T={evento:['📌','#6366f1','Evento'],pago:['💸','#ef4444','Pago'],suscripcion:['🔁','#a78bfa','Suscripción']};
+const REPL={no:'No se repite',semanal:'Cada semana',mensual:'Cada mes',anual:'Cada año'};
+let calM=(()=>{const d=new Date();return{y:d.getFullYear(),m:d.getMonth()};})(),calSel=today();
+function pd(s){return new Date(s+'T12:00:00');}
+function ocurre(e,ds){
+  if(ds<e.fecha)return false;
+  if(!e.repite||e.repite==='no')return ds===e.fecha;
+  const a=pd(e.fecha),b=pd(ds);
+  if(e.repite==='semanal')return Math.round((b-a)/864e5)%7===0;
+  if(e.repite==='mensual')return b.getDate()===Math.min(a.getDate(),new Date(b.getFullYear(),b.getMonth()+1,0).getDate());
+  return b.getMonth()===a.getMonth()&&b.getDate()===a.getDate();
+}
+function itemsDia(ds){
+  const r=state.eventos.filter(e=>ocurre(e,ds)).map(e=>({...e,ds}));
+  state.deudas.forEach(d=>{if(d.deadline===ds&&d.monto-d.pagado>0)r.push({id:'d'+d.id,titulo:(d.nombre||'Deuda')+' (deuda)',tipo:'pago',monto:d.monto-d.pagado,ro:true,ds});});
+  return r;
+}
+function proximos(n){
+  const b=new Date(),out=[];
+  for(let i=0;i<n;i++){const ds=ymd(new Date(b.getFullYear(),b.getMonth(),b.getDate()+i));itemsDia(ds).forEach(it=>out.push({...it,i}));}
+  return out;
+}
+function relDia(i,ds){return (i===0?'Hoy':i===1?'Mañana':'En '+i+' días')+' · '+pd(ds).toLocaleDateString('es',{day:'numeric',month:'short'});}
+function evRow(it,label){
+  const paid=it.pag&&it.pag[it.ds],T=EV_T[it.tipo];
+  const sub=[label,T[2]+(it.repite&&it.repite!=='no'?' ('+REPL[it.repite].toLowerCase()+')':''),it.monto?fmt(it.monto):''].filter(Boolean).join(' · ');
+  return `<div class="ev-row"><span style="font-size:18px">${T[0]}</span><div style="flex:1;min-width:0"${it.ro?'':` onclick="openEvento(${it.id})"`}><div class="f13 fw7 c-main" style="${paid?'text-decoration:line-through;opacity:.5':''}">${escH(it.titulo)}</div><div class="f11" style="color:${it.i<=2&&!paid&&it.tipo!=='evento'?'#f59e0b':'var(--s5)'}">${sub}</div></div>${it.tipo!=='evento'&&!it.ro?`<button class="btn sm" onclick="togglePag(${it.id},'${it.ds}')">${paid?'✓ Pagado':'Pagar'}</button>`:''}</div>`;
+}
+function proximosCard(){
+  const l=proximos(14).filter(it=>!(it.pag&&it.pag[it.ds])).slice(0,5);
+  if(!l.length)return '';
+  return `<div class="card"><div class="f14 fw7 c-main mb6">📆 Próximos</div>${l.map(it=>evRow(it,relDia(it.i,it.ds))).join('')}</div>`;
+}
+function renderFinPagos(){
+  const now=new Date(),y=now.getFullYear(),m=now.getMonth(),nd=new Date(y,m+1,0).getDate();let tot=0;
+  for(let d=1;d<=nd;d++)itemsDia(ymd(new Date(y,m,d))).forEach(it=>{if(it.tipo!=='evento')tot+=it.monto||0;});
+  const l=proximos(45).filter(it=>it.tipo!=='evento');
+  return `<div class="card red"><div class="label c-red">Pagos y suscripciones este mes</div><div class="f22 fw8 c-red">${fmt(tot)}</div></div>
+  <div class="card"><div class="label mb4">Próximos 45 días</div>${l.length?l.map(it=>evRow(it,relDia(it.i,it.ds))).join(''):'<div class="f13 c-muted text-center" style="padding:16px">Sin pagos próximos</div>'}</div>
+  <button class="btn" onclick="openEvento(null,today(),'suscripcion')" style="padding:13px;border-radius:12px;margin-bottom:8px">+ Añadir pago o suscripción</button>
+  <button class="btn sm" style="width:100%" onclick="showTab('agenda',document.querySelectorAll('.tab-btn')[6])">Ver en el calendario</button>`;
+}
+function renderAgenda(){
+  const{y,m}=calM,first=(new Date(y,m,1).getDay()+6)%7,nd=new Date(y,m+1,0).getDate(),td=today();
+  let h=`<div class="page-title">📆 Agenda</div><div class="flex-between mb12"><button class="btn sm" onclick="calNav(-1)" aria-label="Mes anterior">◀</button><div class="f15 fw7 c-main" style="text-transform:capitalize">${new Date(y,m,1).toLocaleDateString('es',{month:'long',year:'numeric'})}</div><div class="flex gap6"><button class="btn sm" onclick="calHoy()">Hoy</button><button class="btn sm" onclick="calNav(1)" aria-label="Mes siguiente">▶</button></div></div><div class="card"><div class="cal-grid">${['L','M','M','J','V','S','D'].map(x=>`<div class="cal-h">${x}</div>`).join('')}`;
+  for(let i=0;i<first;i++)h+='<div></div>';
+  for(let d=1;d<=nd;d++){
+    const ds=ymd(new Date(y,m,d)),its=itemsDia(ds),ts=[...new Set(its.map(x=>x.tipo))];
+    h+=`<button class="cal-d${ds===td?' today':''}${ds===calSel?' sel':''}" onclick="calPick('${ds}')">${d}<span class="cal-dots">${ts.map(t=>`<i style="background:${EV_T[t][1]}"></i>`).join('')}</span></button>`;
+  }
+  const its=itemsDia(calSel);
+  h+=`</div></div><div class="card"><div class="flex-between mb6"><span class="f14 fw7 c-main" style="text-transform:capitalize">${pd(calSel).toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}</span><button class="btn sm" onclick="openEvento(null,'${calSel}')">＋ Añadir</button></div>${its.length?its.map(it=>evRow(it,'')).join(''):'<div class="f13 c-muted" style="padding:10px 0">Nada este día.</div>'}</div><div class="f11 c-muted" style="padding:0 4px">📌 evento · 💸 pago · 🔁 suscripción. Las deudas con fecha también aparecen aquí.</div>`;
+  document.getElementById('page-agenda').innerHTML=h;
+}
+function calNav(d){calM.m+=d;if(calM.m>11){calM.m=0;calM.y++;}if(calM.m<0){calM.m=11;calM.y--;}renderAgenda();}
+function calHoy(){const n=new Date();calM={y:n.getFullYear(),m:n.getMonth()};calSel=today();renderAgenda();}
+function calPick(ds){calSel=ds;renderAgenda();}
+function togglePag(id,ds){const e=state.eventos.find(x=>x.id===id);if(!e)return;e.pag=e.pag||{};e.pag[ds]=!e.pag[ds];if(!e.pag[ds])delete e.pag[ds];save('eventos');renderTab(curTab);}
+function openEvento(id,fecha,tipo){
+  const e=id?state.eventos.find(x=>x.id===id):null,tp=e?e.tipo:(tipo||'evento'),rp=e?e.repite||'no':'no';
+  document.getElementById('modal-title').textContent=e?'Editar':'Nuevo en la agenda';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Título *</div><input class="inp" id="ev-titulo" value="${e?escH(e.titulo).replace(/"/g,'&quot;'):''}" placeholder="Ej: Netflix, renta, cita dentista"/></div>
+    <div class="form-row"><div class="sublabel">Tipo</div><select class="inp" id="ev-tipo">${Object.entries(EV_T).map(([k,v])=>`<option value="${k}"${tp===k?' selected':''}>${v[0]} ${v[2]}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="sublabel">Monto (opcional)</div><input type="number" inputmode="decimal" class="inp" id="ev-monto" value="${e&&e.monto?e.monto:''}" placeholder="0.00"/></div>
+    <div class="form-row"><div class="sublabel">Fecha *</div><input type="date" class="inp" id="ev-fecha" value="${e?e.fecha:(fecha||today())}"/></div>
+    <div class="form-row"><div class="sublabel">Se repite</div><select class="inp" id="ev-rep">${Object.entries(REPL).map(([k,v])=>`<option value="${k}"${rp===k?' selected':''}>${v}</option>`).join('')}</select></div>
+    <div class="modal-actions"><button class="btn" onclick="saveEvento(${id||0})" style="padding:11px">Guardar</button>${e?`<button class="btn danger" onclick="deleteEvento(${id})">Eliminar</button>`:''}</div>`;
+  openModal();
+}
+function saveEvento(id){
+  const titulo=document.getElementById('ev-titulo').value.trim(),fecha=document.getElementById('ev-fecha').value;
+  if(!titulo||!fecha)return;
+  const d={titulo,tipo:document.getElementById('ev-tipo').value,monto:parseFloat(document.getElementById('ev-monto').value)||0,fecha,repite:document.getElementById('ev-rep').value};
+  if(id){Object.assign(state.eventos.find(x=>x.id===id),d);}else{state.eventos.push({id:nid(state.eventos),pag:{},...d});}
+  save('eventos');closeModal();calSel=fecha;renderTab(curTab);
+}
+function deleteEvento(id){state.eventos=state.eventos.filter(x=>x.id!==id);save('eventos');closeModal();renderTab(curTab);}
 
 // ══ MODAL ═══════════════════════════════════════════════════════════════════
 function openModal(){document.getElementById('modal').classList.remove('hidden');}
