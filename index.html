@@ -162,7 +162,8 @@ select.inp{appearance:none;cursor:pointer}
 .mn-n{font-size:13px;font-weight:600;color:#e2e8f0}.mn-row.snack .mn-n{font-weight:500;color:#94a3b8}
 .mn-d{font-size:11px;color:#64748b;line-height:1.5;margin-top:2px}
 .mn-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #1e293b;cursor:pointer;font-size:13px;color:#cbd5e1}
-.mn-item .check{width:20px;height:20px;border-radius:6px}.mn-item.done span{color:#475569;text-decoration:line-through}
+.mn-item .check{width:20px;height:20px;border-radius:6px}.mn-add{display:flex;gap:8px;margin-top:10px}.mn-add .inp{padding:8px 10px}.mn-add .btn.sm{padding:6px 14px;font-size:16px}
+.mn-item.done span{color:#475569;text-decoration:line-through}
 </style>
 <style>
 .cs-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;transition:border-color .2s}
@@ -189,8 +190,14 @@ select.inp{appearance:none;cursor:pointer}
 .dia-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid #1e293b}
 .dia-img{display:block;width:100%;border-radius:10px;margin-top:10px;border:1px solid #1e293b}
 </style>
-  <link rel="manifest" href="manifest.json"/>
-  <meta name="theme-color" content="#0b1120"/>
+<style>
+.agua{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.vaso{padding:8px 0;border-radius:8px;border:1px solid #1e293b;background:transparent;font-size:16px;opacity:.3;cursor:pointer;transition:all .15s}
+.vaso.on{opacity:1;background:#22d3ee22;border-color:#22d3ee55}
+.pr-inp{width:100px;padding:6px 8px;font-size:12px;text-align:right}
+</style>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#0b1120"/>
 </head>
 <body>
 
@@ -331,6 +338,9 @@ let state={
   comp: ls('comp',{}),
   diario: ls('diario',[]),
   menu: ls('menu',{sem:1,vista:'menu',chk:{}}),
+  agua: ls('agua',{}),
+  presup: ls('presup',{}),
+  hist: ls('hist',{}),
   // FINANZAS
   txs: ls('txs',[]),        // transacciones: {id,fecha,tipo,categoria,cuenta,monto,nota}
   deudas: ls('deudas',[]),  // {id,nombre,prestamista,monto,pagado,deadline,tipo}
@@ -437,6 +447,7 @@ function renderInicio(){
     <div class="card"><div class="f20 mb4">💸</div><div class="f20 fw8 c-red">${fmt(gastosMes)}</div><div class="f11 c-muted">Gastos este mes</div></div>
     <div class="card"><div class="f20 mb4">${balance>=0?'📈':'📉'}</div><div class="f20 fw8" style="color:${balance>=0?'#00d4aa':'#ef4444'}">${fmt(balance)}</div><div class="f11 c-muted">Balance del mes</div></div>
   </div>`;
+  html+=extrasInicio();
   html+=`<div class="card mb12"><div class="flex-between mb6"><span class="f14 fw7 c-main">Nivel ${niv}</span><span class="f13 fw7 c-purple">${xp} XP</span></div>${bar(xpN,'#6366f1',6)}<div class="f11 c-dim mt4">${xpN}/100 XP → nivel ${niv+1}</div></div>`;
   if(catData.length){
     html+=`<div class="card mb12"><div class="label mb12">Rendimiento por área</div>
@@ -487,6 +498,7 @@ function toggleHabito(id){
   const td=today(),done=state.comp[id]===td;
   if(done){delete state.comp[id];state.xp=Math.max(0,state.xp-10);}
   else{state.comp[id]=td;state.xp+=10;}
+  const hs=state.hist[td]||[];state.hist[td]=done?hs.filter(x=>x!==id):[...new Set([...hs,id])];save('hist');
   save('comp');save('xp');updateHeader();renderHabitos();
 }
 function newHabito(){openHabitoModal(null);}
@@ -660,6 +672,7 @@ function renderFinResumen(){
       </div>`).join('') || '<div class="f13 c-muted text-center" style="padding:12px">Sin datos</div>'}
   </div>
 
+  ${presupCard()}
   <button class="btn" onclick="openNuevaTx()" style="padding:13px;font-size:14px;border-radius:12px;margin-bottom:8px">+ Registrar gasto</button>
   <button class="btn purple" onclick="openNuevoIngreso()" style="padding:12px;font-size:13px;border-radius:12px">+ Registrar ingreso</button>`;
   return html;
@@ -1059,23 +1072,69 @@ function menuDias(w){
   });
   return h+`<div class="f12 c-muted" style="line-height:1.6;padding:0 4px 8px">Las colaciones son solo si hay apetito. Porciones por persona, para 2 personas. 3 L de agua al día, sin líquidos junto con la comida (30–60 min antes o después). Máximo 2 tortillas de maíz al día.</div>`;
 }
-function menuCompras(w){
-  const cats=Object.entries(COMPRAS[w-1]),chk=state.menu.chk;
-  let tot=0,ok=0;
-  cats.forEach(([c,s],ci)=>s.split('|').forEach((_,ii)=>{tot++;if(chk[`${w}-${ci}-${ii}`])ok++;}));
-  let h=`<div class="card teal"><div class="flex-between mb8"><span class="f13 fw7 c-main">Semana ${w}</span><span class="f12 c-teal fw7">${ok} de ${tot}</span></div>${bar(tot?ok/tot*100:0)}</div>`;
-  cats.forEach(([c,s],ci)=>{
-    h+=`<div class="card"><div class="f13 fw7 c-teal mb6">${c}</div>`;
-    s.split('|').forEach((it,ii)=>{
-      const k=`${w}-${ci}-${ii}`,d=chk[k];
-      h+=`<div class="mn-item${d?' done':''}" onclick="toggleCompra('${k}')"><div class="check${d?' done':''}"></div><span>${it}</span></div>`;
-    });
-    h+='</div>';
-  });
-  return h+`<button class="btn sm" style="width:100%" onclick="resetCompras(${w})">Desmarcar la semana ${w}</button>`;
+function lista(w){
+  const m=state.menu;m.lst=m.lst||{};
+  if(!m.lst[w])m.lst[w]=Object.entries(COMPRAS[w-1]).map(([c,s])=>({c,items:s.split('|').map(t=>({t,ok:false}))}));
+  return m.lst[w];
 }
-function toggleCompra(k){const c=state.menu.chk;c[k]=!c[k];if(!c[k])delete c[k];save('menu');renderMenu();}
-function resetCompras(w){Object.keys(state.menu.chk).forEach(k=>{if(k.startsWith(w+'-'))delete state.menu.chk[k];});save('menu');renderMenu();}
+function menuCompras(w){
+  const L=lista(w);let tot=0,ok=0;
+  L.forEach(g=>g.items.forEach(i=>{tot++;if(i.ok)ok++;}));
+  let h=`<div class="card teal"><div class="flex-between mb8"><span class="f13 fw7 c-main">Semana ${w}</span><span class="f12 c-teal fw7">${ok} de ${tot}</span></div>${bar(tot?ok/tot*100:0)}</div>`;
+  L.forEach((g,gi)=>{
+    h+=`<div class="card"><div class="flex-between mb6"><span class="f13 fw7 c-teal">${escH(g.c)}</span><button class="del-btn" onclick="delCat(${w},${gi})" aria-label="Quitar categoría">🗑</button></div>`;
+    g.items.forEach((it,ii)=>{
+      h+=`<div class="mn-item${it.ok?' done':''}"><div class="check${it.ok?' done':''}" onclick="toggleCompra(${w},${gi},${ii})"></div><span style="flex:1" onclick="toggleCompra(${w},${gi},${ii})">${escH(it.t)}</span><button class="del-btn" onclick="editCompra(${w},${gi},${ii})" aria-label="Editar">✎</button><button class="del-btn" onclick="delCompra(${w},${gi},${ii})" aria-label="Quitar">×</button></div>`;
+    });
+    h+=`<div class="mn-add"><input class="inp" id="add-${gi}" placeholder="Añadir artículo…" onkeydown="if(event.key==='Enter')addCompra(${w},${gi})"/><button class="btn sm" onclick="addCompra(${w},${gi})">＋</button></div></div>`;
+  });
+  return h+`<div class="flex gap8 mb10"><button class="btn sm" style="flex:1" onclick="addCat(${w})">＋ Categoría</button><button class="btn sm" style="flex:1" onclick="resetCompras(${w})">Desmarcar todo</button></div><button class="btn" style="width:100%;margin-bottom:8px" onclick="registrarCompra(${w})">🛒 Registrar gasto en Dinero</button><button class="btn sm" style="width:100%" onclick="restaurarLista(${w})">Restaurar lista original</button>`;
+}
+function saveMenu(){save('menu');renderMenu();}
+function toggleCompra(w,g,i){const it=lista(w)[g].items[i];it.ok=!it.ok;saveMenu();}
+function addCompra(w,g){const t=document.getElementById('add-'+g).value.trim();if(!t)return;lista(w)[g].items.push({t,ok:false});saveMenu();}
+function editCompra(w,g,i){const it=lista(w)[g].items[i],t=prompt('Editar artículo',it.t);if(t&&t.trim()){it.t=t.trim();saveMenu();}}
+function delCompra(w,g,i){lista(w)[g].items.splice(i,1);saveMenu();}
+function addCat(w){const c=prompt('Nombre de la categoría');if(c&&c.trim()){lista(w).push({c:c.trim(),items:[]});saveMenu();}}
+function delCat(w,g){if(confirm('¿Quitar esta categoría y sus artículos?')){lista(w).splice(g,1);saveMenu();}}
+function resetCompras(w){lista(w).forEach(g=>g.items.forEach(i=>i.ok=false));saveMenu();}
+function restaurarLista(w){if(confirm('¿Volver a la lista original de la semana '+w+'? Se pierden tus cambios.')){delete state.menu.lst[w];saveMenu();}}
+
+// ══ EXTRAS: HOY, AGUA, RESUMEN, PRESUPUESTO ═════════════════════════════════
+const AGUA_META=12; // vasos de 250 ml = 3 L
+function diasAtras(n){return new Date(Date.now()-n*864e5).toISOString().slice(0,10);}
+function gastoPorCat(){const mes=today().slice(0,7),o={};state.txs.filter(t=>t.tipo==='gasto'&&t.fecha.startsWith(mes)).forEach(t=>{o[t.categoria]=(o[t.categoria]||0)+t.monto;});return o;}
+function extrasInicio(){
+  const td=today(),m=state.menu,hy=m.hoy||{sem:1,dia:1},dia=MENU[hy.sem-1][hy.dia-1];
+  let h=`<div class="card teal"><div class="flex-between mb8"><span class="f14 fw7 c-main">🍽️ Hoy toca</span><div class="flex gap6" style="align-items:center"><button class="btn sm" onclick="hoyMove(-1)">◀</button><span class="f12 c-teal fw7">Sem ${hy.sem} · Día ${hy.dia}</span><button class="btn sm" onclick="hoyMove(1)">▶</button></div></div>`;
+  dia.forEach((x,j)=>{h+=`<div class="mn-row${j%2?' snack':''}"><div class="mn-l">${MN_L[j]}</div><div class="mn-n">${(MN_R[x]||x).split('|')[0]}</div></div>`;});
+  h+='</div>';
+  const n=state.agua[td]||0;
+  h+=`<div class="card"><div class="flex-between mb8"><span class="f14 fw7 c-main">💧 Agua</span><span class="f12 c-cyan fw7">${(n*.25).toFixed(2).replace(/\.?0+$/,'')} L de 3 L</span></div><div class="agua">${Array.from({length:AGUA_META},(_,i)=>`<button class="vaso${i<n?' on':''}" onclick="aguaSet(${i+1})" aria-label="Vaso ${i+1}">💧</button>`).join('')}</div></div>`;
+  const pc=gastoPorCat(),av=Object.entries(state.presup).filter(([c,l])=>l>0&&(pc[c]||0)/l>=.8);
+  av.forEach(([c,l])=>{const p=Math.round((pc[c]||0)/l*100);h+=`<div class="card red"><div class="f13 c-red fw7">⚠️ ${c}: ${p>=100?'te pasaste del límite':'vas al '+p+'% del límite'}</div><div class="f12 c-muted mt4">${fmt(pc[c])} de ${fmt(l)} este mes</div></div>`;});
+  const ds=Array.from({length:7},(_,i)=>diasAtras(i));
+  const gasto=state.txs.filter(t=>t.tipo==='gasto'&&ds.includes(t.fecha)).reduce((s,t)=>s+t.monto,0);
+  const hc=ds.reduce((s,d)=>s+((state.hist[d]||[]).length),0),hp=state.habitos.length?Math.round(hc/(state.habitos.length*7)*100):0;
+  const en=state.diario.filter(e=>ds.includes(e.fecha)),an=en.length?HUMORES[Math.round(en.reduce((s,e)=>s+e.humor,0)/en.length)-1]:'—';
+  h+=`<div class="card purple"><div class="f14 fw7 c-main mb10">📅 Últimos 7 días</div><div class="grid3" style="margin-bottom:0"><div class="text-center"><div class="f20 fw8 c-teal">${hp}%</div><div class="f11 c-muted">Hábitos</div></div><div class="text-center"><div class="f20 fw8 c-red">${fmt(gasto)}</div><div class="f11 c-muted">Gastado</div></div><div class="text-center"><div class="f20">${an}</div><div class="f11 c-muted">Ánimo (${en.length})</div></div></div></div>`;
+  return h;
+}
+function hoyMove(d){const m=state.menu,hy=m.hoy||{sem:1,dia:1},i=((hy.sem-1)*5+hy.dia-1+d+20)%20;m.hoy={sem:Math.floor(i/5)+1,dia:i%5+1};save('menu');renderInicio();}
+function aguaSet(k){const td=today();state.agua[td]=(state.agua[td]===k)?k-1:k;save('agua');renderInicio();}
+function presupCard(){
+  const pc=gastoPorCat();
+  return `<div class="card mb12"><div class="label mb4">Límites mensuales</div><div class="f11 c-muted mb10">Escribe un tope por categoría. Te avisamos al llegar al 80%.</div>${CATS_TX.map((c,i)=>{
+    const l=state.presup[c]||0,g=pc[c]||0,p=l?Math.round(g/l*100):0,col=p>=100?'#ef4444':p>=80?'#f59e0b':'#00d4aa';
+    return `<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${CAT_TX_EMO[c]} ${c}</span><input class="inp pr-inp" type="number" inputmode="decimal" min="0" placeholder="Sin límite" value="${l||''}" onchange="setPresup(${i},this.value)"/></div>${l?`${bar(p,col,5)}<div class="f11 mt4" style="color:${col}">${fmt(g)} de ${fmt(l)} · ${p}%</div>`:''}</div>`;}).join('')}</div>`;
+}
+function setPresup(i,v){const c=CATS_TX[i],n=parseFloat(v);if(n>0)state.presup[c]=n;else delete state.presup[c];save('presup');renderDinero();}
+function registrarCompra(w){
+  const v=prompt('¿Cuánto gastaste en las compras de la semana '+w+'? (se registra en Supermercado/Despensa, cuenta Efectivo)');
+  const monto=parseFloat(v);if(!monto||monto<=0)return;
+  state.txs.push({id:nid(state.txs),tipo:'gasto',categoria:'Supermercado/Despensa',cuenta:'Efectivo',monto,nota:'Compras semana '+w,fecha:today()});
+  save('txs');alert('Gasto de '+fmt(monto)+' registrado en Dinero.');
+}
 
 // ══ MODAL ═══════════════════════════════════════════════════════════════════
 function openModal(){document.getElementById('modal').classList.remove('hidden');}
@@ -1176,6 +1235,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>.f18{font-size:18px}.mb20{m
 })();
 
 </script>
-  <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
 </body>
 </html>
