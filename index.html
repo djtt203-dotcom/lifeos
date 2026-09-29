@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LifeOS</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0b1120;color:#f1f5f9;min-height:100vh}
+input,select,textarea,button{font-family:'Inter',sans-serif}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#00d4aa!important}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0f172a}::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+#app{max-width:480px;margin:0 auto;padding-bottom:20px}
+.header{background:#0f172a;border-bottom:1px solid #1e293b;padding:12px 16px;position:sticky;top:0;z-index:100}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.logo{font-size:17px;font-weight:800;letter-spacing:-.5px}.logo span{color:#00d4aa}
+.header-date{font-size:10px;color:#475569;margin-top:1px}
+.header-badges{display:flex;gap:6px;align-items:center}
+.badge{border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700}
+.badge-fire{background:#f59e0b22;border:1px solid #f59e0b33;color:#f59e0b}
+.badge-xp{background:#6366f122;border:1px solid #6366f133;color:#a5b4fc;text-align:center}
+.badge-xp .lv{font-size:9px;color:#6366f1;font-weight:700;line-height:1}
+.badge-xp .xp{font-size:11px;font-weight:800}
+.badge-focus{background:#6366f122;border:1px solid #6366f133;color:#a5b4fc;cursor:pointer;border:none;border-radius:8px}
+.tabs-bar{display:flex;gap:3px}
+.tab-btn{flex:1;padding:7px 2px;border-radius:8px;border:none;cursor:pointer;background:transparent;color:#475569;font-size:9px;font-weight:700;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tab-btn .ico{font-size:15px}
+.tab-btn.active{background:#00d4aa;color:#050d1a}
+.content{padding:16px}
+.page-title{font-size:19px;font-weight:800;margin-bottom:14px;letter-spacing:-.5px}
+.card{background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:16px;margin-bottom:12px}
+.card.purple{background:linear-gradient(135deg,#6366f10a,#0f172a);border-color:#6366f122}
+.card.teal{background:linear-gradient(135deg,#00d4aa0e,#0f172a)}
+.card.red{background:linear-gradient(135deg,#ef44440a,#0f172a);border-color:#ef444422}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.bar-wrap{background:#1e293b;border-radius:99px;overflow:hidden}
+.bar-fill{height:100%;border-radius:99px;transition:width .5s ease}
+.inp{background:#1e293b;border:1px solid #2d3f55;border-radius:8px;color:#f1f5f9;padding:10px 12px;font-size:13px;width:100%}
+.inp::placeholder{color:#475569}
+textarea.inp{resize:none;line-height:1.6}
+select.inp{appearance:none;cursor:pointer}
+.btn{background:#00d4aa;color:#050d1a;border:none;border-radius:9px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;width:100%;transition:opacity .2s}
+.btn:hover{opacity:.88}
+.btn.purple{background:#6366f1;color:#fff}
+.btn.red{background:#ef4444;color:#fff}
+.btn.amber{background:#f59e0b;color:#050d1a}
+.btn.sm{background:transparent;border:1px solid #1e293b;color:#64748b;border-radius:7px;padding:6px 10px;font-size:12px;width:auto}
+.btn.danger{background:transparent;border:1px solid #ef444433;color:#ef4444;font-size:12px;font-weight:600}
+.label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sublabel{font-size:12px;color:#64748b;margin-bottom:6px}
+.cat-dot{width:3px;height:16px;border-radius:2px;flex-shrink:0}
+.habit-item{display:flex;align-items:center;gap:12px;padding:14px;background:#0f172a;border:1px solid #1e293b;border-radius:12px;margin-bottom:8px;transition:all .2s;cursor:pointer}
+.habit-item.done{border-color:#00d4aa44;background:#00d4aa08}
+.check{width:24px;height:24px;border-radius:7px;border:2px solid #334155;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;cursor:pointer}
+.check.done{background:#00d4aa;border-color:#00d4aa}
+.check.done::after{content:'✓';font-size:13px;color:#050d1a;font-weight:900}
+.habit-name{font-size:14px;font-weight:600;color:#e2e8f0;transition:all .2s}
+.habit-name.done{color:#00d4aa;text-decoration:line-through}
+.habit-id{font-size:11px;color:#475569;margin-top:2px}
+.xp-tag{font-size:11px;color:#00d4aa;font-weight:700;margin-left:auto;white-space:nowrap}
+.ring-wrap{position:relative;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ring-pct{font-size:13px;font-weight:700;color:#f1f5f9}
+.modal-bg{position:fixed;inset:0;background:#000000bb;z-index:999;display:flex;align-items:flex-end;justify-content:center}
+.modal-box{background:#0f172a;border:1px solid #1e293b;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-title{font-size:16px;font-weight:700;color:#f1f5f9}
+.modal-close{background:#1e293b;border:none;color:#94a3b8;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px}
+.form-row{margin-bottom:12px}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.form-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.emoji-btn{font-size:20px;background:transparent;border:1.5px solid #1e293b;border-radius:8px;padding:5px 8px;cursor:pointer;transition:all .2s}
+.emoji-btn.sel{background:#00d4aa22;border-color:#00d4aa}
+.modal-actions{display:flex;gap:8px;margin-top:4px}
+#onboarding{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.ob-wrap{width:100%;max-width:420px}
+.ob-logo{text-align:center;margin-bottom:24px;font-size:22px;font-weight:800}
+.ob-progress{display:flex;gap:6px;margin-bottom:24px}
+.ob-bar{flex:1;height:3px;border-radius:99px;background:#1e293b;transition:background .3s}
+.ob-bar.active{background:#00d4aa}
+.ob-step{display:none}.ob-step.active{display:block}
+.ob-emoji{font-size:52px;text-align:center;margin-bottom:16px}
+.ob-h{font-size:23px;font-weight:800;color:#f1f5f9;margin-bottom:8px}
+.ob-p{color:#64748b;font-size:14px;line-height:1.6;margin-bottom:16px}
+.goal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.goal-btn{background:#1e293b;border:1.5px solid #2d3f55;border-radius:10px;padding:12px 10px;cursor:pointer;text-align:left;color:#94a3b8;font-size:13px;font-weight:600;transition:all .2s}
+.goal-btn .ge{font-size:18px;display:block;margin-bottom:4px}
+.goal-btn.sel{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+#focus-mode{position:fixed;inset:0;background:#050d1a;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.focus-close{position:absolute;top:20px;right:20px;background:#1e293b;border:none;color:#64748b;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:18px}
+.focus-label{font-size:13px;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:2px}
+.focus-ring{position:relative;margin-bottom:24px}
+.focus-ring svg{transform:rotate(-90deg)}
+.focus-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;color:#f1f5f9;letter-spacing:-2px}
+.focus-btns{display:flex;gap:10px;margin-bottom:20px}
+.focus-presets{display:flex;gap:8px}
+.humor-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
+.humor-btn{font-size:28px;background:none;border:2px solid transparent;border-radius:10px;padding:6px;cursor:pointer;transition:border .2s}
+.humor-btn.sel{border-color:#00d4aa}
+.entry-preview{font-size:12px;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}
+.entry-body{font-size:13px;color:#94a3b8;line-height:1.7;border-top:1px solid #1e293b;padding-top:12px;margin-top:8px}
+.sub-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #1e293b}
+.sub-check{width:18px;height:18px;border-radius:4px;border:2px solid #334155;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;transition:all .2s}
+.sub-check.done{border-color:#00d4aa;background:#00d4aa}
+.sub-check.done::after{content:'✓';font-size:10px;color:#050d1a;font-weight:900}
+.sub-text{flex:1;font-size:13px;color:#cbd5e1}
+.sub-text.done{color:#64748b;text-decoration:line-through}
+.del-btn{background:none;border:none;color:#475569;cursor:pointer;font-size:15px;padding:2px 4px}
+.cat-badge{border-radius:5px;padding:2px 7px;font-size:10px;font-weight:700;display:inline-block}
+.section-cat{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.section-cat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px}
+.empty-state{text-align:center;padding:40px 20px;color:#475569}
+.empty-state .es-ico{font-size:48px;margin-bottom:12px}
+.empty-state .es-t{font-size:15px;color:#64748b}
+.empty-state .es-s{font-size:13px;color:#475569;margin-top:4px}
+/* ─── FINANZAS específico ─── */
+.fin-tabs{display:flex;gap:6px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
+.fin-tab{padding:7px 14px;border-radius:8px;border:1px solid #1e293b;background:transparent;color:#64748b;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s}
+.fin-tab.active{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+.tx-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #1e293b}
+.tx-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.tx-info{flex:1;min-width:0}
+.tx-name{font-size:13px;font-weight:600;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx-meta{font-size:11px;color:#475569;margin-top:1px}
+.tx-amount{font-size:14px;font-weight:700;white-space:nowrap}
+.tx-amount.ingreso{color:#00d4aa}
+.tx-amount.gasto{color:#ef4444}
+.deuda-item{padding:14px 0;border-bottom:1px solid #1e293b}
+.deuda-name{font-size:14px;font-weight:600;color:#f1f5f9;margin-bottom:4px}
+.pill{display:inline-block;border-radius:99px;padding:2px 8px;font-size:10px;font-weight:700}
+.pill-red{background:#ef444422;color:#ef4444}
+.pill-amber{background:#f59e0b22;color:#f59e0b}
+.pill-green{background:#00d4aa22;color:#00d4aa}
+.tipo-sel{display:flex;gap:6px;margin-bottom:12px}
+.tipo-btn{flex:1;padding:9px;border-radius:8px;border:1px solid #1e293b;background:transparent;color:#64748b;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.tipo-btn.sel-ingreso{background:#00d4aa22;border-color:#00d4aa;color:#00d4aa}
+.tipo-btn.sel-gasto{background:#ef444422;border-color:#ef4444;color:#ef4444}
+.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.week-nav button{background:#1e293b;border:none;color:#94a3b8;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px}
+.week-nav span{font-size:13px;font-weight:600;color:#f1f5f9}
+/* misc */
+.hidden{display:none!important}
+.flex{display:flex}.flex-between{display:flex;justify-content:space-between;align-items:center}
+.flex-center{display:flex;align-items:center}
+.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}.gap12{gap:12px}
+.mt4{margin-top:4px}.mt6{margin-top:6px}.mt8{margin-top:8px}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}.mt16{margin-top:16px}
+.mb4{margin-bottom:4px}.mb6{margin-bottom:6px}.mb8{margin-bottom:8px}.mb10{margin-bottom:10px}.mb12{margin-bottom:12px}.mb14{margin-bottom:14px}.mb16{margin-bottom:16px}
+.f10{font-size:10px}.f11{font-size:11px}.f12{font-size:12px}.f13{font-size:13px}.f14{font-size:14px}.f15{font-size:15px}.f20{font-size:20px}.f22{font-size:22px}.f30{font-size:30px}
+.fw7{font-weight:700}.fw8{font-weight:800}
+.c-teal{color:#00d4aa}.c-purple{color:#6366f1}.c-amber{color:#f59e0b}.c-cyan{color:#22d3ee}.c-pink{color:#ec4899}.c-muted{color:#64748b}.c-dim{color:#475569}.c-main{color:#f1f5f9}.c-sub{color:#94a3b8}.c-mid{color:#cbd5e1}.c-red{color:#ef4444}
+.text-center{text-align:center}.w100{width:100%}.italic{font-style:italic}
+.ls1{letter-spacing:1px}.ls15{letter-spacing:1.5px}
+</style>
+<style>
+.mn-day{padding:12px 14px}.mn-day-t{font-size:14px;font-weight:800;color:#00d4aa;margin-bottom:6px}
+.mn-row{display:flex;gap:10px;padding:8px 0;border-top:1px solid #1e293b}
+.mn-l{width:66px;flex-shrink:0;font-size:11px;font-weight:600;color:#64748b;padding-top:2px}
+.mn-n{font-size:13px;font-weight:600;color:#e2e8f0}.mn-row.snack .mn-n{font-weight:500;color:#94a3b8}
+.mn-d{font-size:11px;color:#64748b;line-height:1.5;margin-top:2px}
+.mn-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #1e293b;cursor:pointer;font-size:13px;color:#cbd5e1}
+.mn-item .check{width:20px;height:20px;border-radius:6px}.mn-item.done span{color:#475569;text-decoration:line-through}
+</style>
+<style>
+.cs-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer;transition:border-color .2s}
+.cs-btn:hover,.cs-btn:focus-visible{border-color:#00d4aa;outline:none}
+.cs-bg{position:fixed;inset:0;background:#000000aa;z-index:1200;display:flex;align-items:flex-end;justify-content:center;animation:csFade .18s ease}
+.cs-box{background:#0f172a;border:1px solid #1e293b;border-bottom:none;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:70vh;padding:8px 14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;animation:csUp .22s ease}
+.cs-grab{width:38px;height:4px;border-radius:4px;background:#334155;margin:4px auto 12px}
+.cs-title{font-size:13px;font-weight:700;color:#94a3b8;margin:0 6px 10px}
+.cs-list{overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.cs-opt{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 14px;border-radius:12px;border:1px solid transparent;background:transparent;color:#cbd5e1;font-size:15px;font-weight:500;text-align:left;cursor:pointer;transition:background .15s}
+.cs-opt:hover{background:#1e293b}
+.cs-opt.sel{background:#00d4aa14;border-color:#00d4aa55;color:#00d4aa;font-weight:700}
+.cs-opt i{width:20px;height:20px;border-radius:50%;border:2px solid #334155;flex-shrink:0;position:relative}
+.cs-opt.sel i{background:#00d4aa;border-color:#00d4aa}
+.cs-opt.sel i::after{content:'';position:absolute;left:5px;top:2px;width:5px;height:9px;border:solid #050d1a;border-width:0 2px 2px 0;transform:rotate(45deg)}
+@keyframes csUp{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes csFade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.cs-bg,.cs-box{animation:none}}
+</style>
+<style>
+.dia-add{display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:#94a3b8}
+.dia-prev{position:relative}.dia-prev img{display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;border:1px solid #1e293b}
+.dia-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:#000000aa;color:#f1f5f9;font-size:16px;cursor:pointer}
+.dia-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid #1e293b}
+.dia-img{display:block;width:100%;border-radius:10px;margin-top:10px;border:1px solid #1e293b}
+</style>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#0b1120"/>
+</head>
+<body>
+
+<!-- ══ ONBOARDING ══════════════════════════════════════════════════════════ -->
+<div id="onboarding">
+  <div class="ob-wrap">
+    <div class="ob-logo"><span style="color:#00d4aa">◆</span> LifeOS</div>
+    <div class="ob-progress">
+      <div class="ob-bar" id="ob-b1"></div><div class="ob-bar" id="ob-b2"></div><div class="ob-bar" id="ob-b3"></div>
+    </div>
+    <div class="card ob-step active" id="ob-s0">
+      <div class="ob-emoji">✨</div>
+      <div style="text-align:center">
+        <h2 class="ob-h">Tu vida cambia hoy.</h2>
+        <p class="ob-p">Hábitos, metas, finanzas completas y diario — todo en un solo lugar.</p>
+        <button class="btn" onclick="obStep(1)" style="padding:13px;font-size:15px">Empezar →</button>
+      </div>
+    </div>
+    <div class="card ob-step" id="ob-s1">
+      <h2 class="ob-h mb8">¿Cómo te llamas?</h2>
+      <p class="ob-p" style="margin-bottom:14px">Para personalizar tu experiencia.</p>
+      <input class="inp mb16" id="ob-name" placeholder="Tu nombre..." style="font-size:18px;font-weight:600"/>
+      <button class="btn" onclick="obStep(2)" style="padding:12px">Continuar →</button>
+    </div>
+    <div class="card ob-step" id="ob-s2">
+      <h2 class="ob-h mb8">¿Qué quieres lograr?</h2>
+      <div class="goal-grid">
+        <button class="goal-btn" onclick="toggleGoal(this,'Ponerme en forma')"><span class="ge">💪</span>Ponerme en forma</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Aprender algo nuevo')"><span class="ge">🧠</span>Aprender algo nuevo</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Mejorar mis finanzas')"><span class="ge">💰</span>Mejorar mis finanzas</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Reducir el estrés')"><span class="ge">😌</span>Reducir el estrés</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Mejorar relaciones')"><span class="ge">❤️</span>Mejorar relaciones</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Avanzar en mi carrera')"><span class="ge">🚀</span>Avanzar en mi carrera</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Leer más')"><span class="ge">📚</span>Leer más</button>
+        <button class="goal-btn" onclick="toggleGoal(this,'Viajar')"><span class="ge">🌍</span>Viajar</button>
+      </div>
+      <button class="btn" onclick="obStep(3)" style="padding:12px">Continuar →</button>
+    </div>
+    <div class="card ob-step" id="ob-s3">
+      <h2 class="ob-h mb8">Tu visión de vida</h2>
+      <p class="f11 c-dim mb12">¿Cómo quieres ser en 1 año? La verás cada día.</p>
+      <textarea class="inp mb16" id="ob-vision" rows="4" placeholder="Ej: Quiero ser alguien saludable, libre financieramente..."></textarea>
+      <button class="btn" onclick="obFinish()" style="padding:12px;font-size:14px">Comenzar mi transformación 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══════════════════════════════════════════════════════════════════ -->
+<div id="app" class="hidden">
+  <div id="app-inner">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="logo"><span>◆</span> LifeOS</div>
+          <div class="header-date" id="hdr-date"></div>
+        </div>
+        <div class="header-badges">
+          <button class="badge badge-focus" onclick="openFocus()">🎯 Enfoque</button>
+          <div class="badge badge-fire">🔥 <span id="hdr-racha">0</span></div>
+          <div class="badge badge-xp">
+            <div class="lv">NIV <span id="hdr-niv">1</span></div>
+            <div class="xp"><span id="hdr-xp">0</span>XP</div>
+          </div>
+        </div>
+      </div>
+      <div class="tabs-bar">
+        <button class="tab-btn active" onclick="showTab('inicio',this)"><span class="ico">📊</span>Inicio</button>
+        <button class="tab-btn" onclick="showTab('habitos',this)"><span class="ico">✅</span>Hábitos</button>
+        <button class="tab-btn" onclick="showTab('metas',this)"><span class="ico">🎯</span>Metas</button>
+        <button class="tab-btn" onclick="showTab('dinero',this)"><span class="ico">💳</span>Dinero</button>
+        <button class="tab-btn" onclick="showTab('diario',this)"><span class="ico">📓</span>Diario</button>
+        <button class="tab-btn" onclick="showTab('menu',this)"><span class="ico">🍽️</span>Menú</button>
+      </div>
+    </div>
+    <div class="content">
+      <div id="page-inicio"></div>
+      <div id="page-habitos" class="hidden"></div>
+      <div id="page-metas" class="hidden"></div>
+      <div id="page-dinero" class="hidden"></div>
+      <div id="page-diario" class="hidden"></div>
+      <div id="page-menu" class="hidden"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOCUS MODE ══════════════════════════════════════════════════════════ -->
+<div id="focus-mode" class="hidden">
+  <button class="focus-close" onclick="closeFocus()">×</button>
+  <div class="focus-label">Modo Enfoque</div>
+  <div class="focus-ring">
+    <svg width="200" height="200">
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#1e293b" stroke-width="10"/>
+      <circle id="focus-circle" cx="100" cy="100" r="88" fill="none" stroke="#6366f1" stroke-width="10" stroke-dasharray="0 553" stroke-linecap="round"/>
+    </svg>
+    <div class="focus-time" id="focus-time">25:00</div>
+  </div>
+  <input class="inp mb14" id="focus-task" placeholder="¿En qué te enfocarás?" style="max-width:320px;text-align:center"/>
+  <div class="focus-btns">
+    <button class="btn purple" id="focus-play-btn" onclick="focusToggle()" style="width:140px;padding:12px">▶ Iniciar</button>
+    <button class="btn sm" onclick="focusReset()" style="padding:12px 16px">↺</button>
+  </div>
+  <div class="focus-presets">
+    <button class="btn sm" onclick="focusSet(5)">5m</button>
+    <button class="btn sm" onclick="focusSet(10)">10m</button>
+    <button class="btn sm" onclick="focusSet(15)">15m</button>
+    <button class="btn sm" onclick="focusSet(25)">25m</button>
+    <button class="btn sm" onclick="focusSet(50)">50m</button>
+  </div>
+  <div id="focus-done" class="hidden text-center" style="padding:20px">
+    <div style="font-size:64px;margin-bottom:16px">🎉</div>
+    <div class="f22 fw8 c-main mb8">¡Sesión completada!</div>
+    <button class="btn" onclick="focusAgain()" style="padding:12px;max-width:200px">Otra sesión</button>
+  </div>
+</div>
+
+<!-- ══ MODAL ════════════════════════════════════════════════════════════════ -->
+<div id="modal" class="modal-bg hidden" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ══ STATE ══════════════════════════════════════════════════════════════════
+const KEY='lifeos_';
+function ls(k,d){try{const v=localStorage.getItem(KEY+k);return v?JSON.parse(v):d}catch{return d}}
+function lsSet(k,v){try{localStorage.setItem(KEY+k,JSON.stringify(v))}catch{}}
+
+let state={
+  user: ls('user',null),
+  habitos: ls('habitos',[]),
+  metas: ls('metas',[]),
+  xp: ls('xp',0),
+  comp: ls('comp',{}),
+  diario: ls('diario',[]),
+  menu: ls('menu',{sem:1,vista:'menu',chk:{}}),
+  // FINANZAS
+  txs: ls('txs',[]),        // transacciones: {id,fecha,tipo,categoria,cuenta,monto,nota}
+  deudas: ls('deudas',[]),  // {id,nombre,prestamista,monto,pagado,deadline,tipo}
+  ingresos: ls('ingresos',[]), // {id,fecha,tipo,monto,cuenta,nota}  tipo=sueldo|bono|otro
+};
+function save(k){lsSet(k,state[k]);}
+function nid(a){return a.length?Math.max(...a.map(x=>x.id))+1:1;}
+function today(){return new Date().toISOString().slice(0,10);}
+function emojiLevel(n){return n>=100?'🏆':n>=75?'🔥':n>=50?'⚡':n>=25?'🌱':'💤';}
+function fmt(n){return '$'+Number(n||0).toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:2});}
+
+const CATS_H=['Salud','Mente','Trabajo','Relaciones','Dinero','Crecimiento'];
+const CCAT={Salud:'#00d4aa',Mente:'#a78bfa',Trabajo:'#6366f1',Relaciones:'#ec4899',Dinero:'#22d3ee',Crecimiento:'#f59e0b'};
+const EMOJIS_H=['✅','🏃','📚','💧','🧘','💪','🥗','😴','📝','🎯','🎸','💰','❤️','🧠','✍️'];
+const EMOJIS_M=['🎯','🏃','📚','💰','❤️','🧠','✈️','💻','🎸','🏠','🌍','🎓','💪','🧘','🎨'];
+const HUMORES=['😣','😔','😐','😊','🤩'];
+
+// ─── FINANZAS CONSTANTES ────────────────────────────────────────────────────
+const CUENTAS=['TDC Nu','TDC Didi','Débito Nu','Débito Bakaool','Mercado Pago Crédito','Banorte','Efectivo'];
+const CATS_TX=['Supermercado/Despensa','Gasolina/Transporte','Entretenimiento/Salidas','Restaurantes/Comida','Suscripciones','Servicios/Hogar','Ropa/Compras','Salud/Farmacia','Pago Préstamo','Otro'];
+const PRESTAMOS=['Nu Préstamo','Didi Préstamo','Nu TDC','Mercado Pago Crédito','Didi TDC'];
+const CAT_TX_COLOR={'Supermercado/Despensa':'#00d4aa','Gasolina/Transporte':'#f59e0b','Entretenimiento/Salidas':'#a78bfa','Restaurantes/Comida':'#ec4899','Suscripciones':'#6366f1','Servicios/Hogar':'#22d3ee','Ropa/Compras':'#f97316','Salud/Farmacia':'#10b981','Pago Préstamo':'#ef4444','Otro':'#64748b'};
+const CAT_TX_EMO={'Supermercado/Despensa':'🛒','Gasolina/Transporte':'⛽','Entretenimiento/Salidas':'🎉','Restaurantes/Comida':'🍽️','Suscripciones':'📱','Servicios/Hogar':'🏠','Ropa/Compras':'👕','Salud/Farmacia':'💊','Pago Préstamo':'💸','Otro':'📦'};
+
+// estado UI finanzas
+let finTab='resumen', weekOffset=0, finTipo='gasto';
+
+// ══ HELPERS UI ══════════════════════════════════════════════════════════════
+function bar(pct,color='#00d4aa',h=6){
+  pct=Math.max(0,Math.min(100,pct));
+  return `<div class="bar-wrap" style="height:${h}px"><div class="bar-fill" style="width:${pct}%;background:${color};height:${h}px"></div></div>`;
+}
+function ring(pct,size=72,sw=6,color='#00d4aa'){
+  const r=(size-sw*2)/2,c=2*Math.PI*r,d=(pct/100)*c;
+  return `<div class="ring-wrap" style="width:${size}px;height:${size}px">
+    <svg width="${size}" height="${size}" style="transform:rotate(-90deg)">
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#1e293b" stroke-width="${sw}"/>
+      <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}"
+        stroke-dasharray="${d} ${c}" stroke-linecap="round"/>
+    </svg>
+    <div class="ring-label"><span class="ring-pct">${pct}%</span></div>
+  </div>`;
+}
+function catBadge(cat){const col=CCAT[cat]||'#94a3b8';return `<span class="cat-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${cat}</span>`;}
+
+// ══ RACHA ══════════════════════════════════════════════════════════════════
+function calcRacha(){
+  if(!state.habitos.length)return 0;
+  let r=0,d=new Date();d.setDate(d.getDate()-1);
+  while(true){const dia=d.toISOString().slice(0,10);if(state.habitos.some(h=>state.comp[h.id]===dia)){r++;d.setDate(d.getDate()-1);}else break;}
+  if(state.habitos.some(h=>state.comp[h.id]===today()))r++;
+  return r;
+}
+
+// ══ HEADER ══════════════════════════════════════════════════════════════════
+function updateHeader(){
+  const racha=calcRacha(),xp=state.xp,niv=Math.floor(xp/100)+1;
+  document.getElementById('hdr-racha').textContent=racha;
+  document.getElementById('hdr-xp').textContent=xp;
+  document.getElementById('hdr-niv').textContent=niv;
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'});
+}
+
+// ══ TABS ═══════════════════════════════════════════════════════════════════
+let curTab='inicio';
+function showTab(tab,btn){
+  document.getElementById('page-'+curTab).classList.add('hidden');
+  document.getElementById('page-'+tab).classList.remove('hidden');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');curTab=tab;renderTab(tab);
+}
+function renderTab(tab){
+  if(tab==='inicio')renderInicio();
+  else if(tab==='habitos')renderHabitos();
+  else if(tab==='metas')renderMetas();
+  else if(tab==='dinero')renderDinero();
+  else if(tab==='diario')renderDiario();
+  else if(tab==='menu')renderMenu();
+}
+
+// ══ INICIO ══════════════════════════════════════════════════════════════════
+function renderInicio(){
+  const{habitos,metas,xp,comp,diario,user,txs,ingresos}=state;
+  const td=today(),racha=calcRacha();
+  const hComp=habitos.filter(h=>comp[h.id]===td).length;
+  const hPct=habitos.length?Math.round(hComp/habitos.length*100):0;
+  const mComp=metas.filter(m=>m.submetas.length&&m.submetas.every(s=>s.completado)).length;
+  const mPct=metas.length?Math.round(mComp/metas.length*100):0;
+  const niv=Math.floor(xp/100)+1,xpN=xp%100;
+  // finanzas este mes
+  const mes=td.slice(0,7);
+  const gastosMes=txs.filter(t=>t.tipo==='gasto'&&t.fecha.startsWith(mes)).reduce((s,t)=>s+t.monto,0);
+  const ingresosMes=ingresos.filter(i=>i.fecha.startsWith(mes)).reduce((s,i)=>s+i.monto,0);
+  const balance=ingresosMes-gastosMes;
+  const catData=CATS_H.filter(c=>habitos.some(h=>h.categoria===c)).map(cat=>{
+    const d=habitos.filter(h=>h.categoria===cat);
+    return{cat,pct:d.length?Math.round(d.filter(h=>comp[h.id]===td).length/d.length*100):0};
+  });
+  let html=`<div class="page-title">Dashboard</div>`;
+  if(user)html+=`<div class="card purple mb12"><div class="label ls15 c-purple mb4">Hola de nuevo</div><div class="f22 fw8 c-main mb6">${user.name} 👋</div>${user.vision?`<div class="f12 c-muted italic" style="line-height:1.6">"${user.vision}"</div>`:''}</div>`;
+  html+=`<div class="grid2">
+    <div class="card"><div class="f20 mb4">✅</div><div class="f20 fw8 c-teal">${hComp}/${habitos.length}</div><div class="f11 c-muted mb8">Hábitos hoy</div>${bar(hPct,'#00d4aa',4)}</div>
+    <div class="card"><div class="f20 mb4">🎯</div><div class="f20 fw8 c-purple">${mComp}/${metas.length}</div><div class="f11 c-muted mb8">Metas logradas</div>${bar(mPct,'#6366f1',4)}</div>
+    <div class="card"><div class="f20 mb4">💸</div><div class="f20 fw8 c-red">${fmt(gastosMes)}</div><div class="f11 c-muted">Gastos este mes</div></div>
+    <div class="card"><div class="f20 mb4">${balance>=0?'📈':'📉'}</div><div class="f20 fw8" style="color:${balance>=0?'#00d4aa':'#ef4444'}">${fmt(balance)}</div><div class="f11 c-muted">Balance del mes</div></div>
+  </div>`;
+  html+=`<div class="card mb12"><div class="flex-between mb6"><span class="f14 fw7 c-main">Nivel ${niv}</span><span class="f13 fw7 c-purple">${xp} XP</span></div>${bar(xpN,'#6366f1',6)}<div class="f11 c-dim mt4">${xpN}/100 XP → nivel ${niv+1}</div></div>`;
+  if(catData.length){
+    html+=`<div class="card mb12"><div class="label mb12">Rendimiento por área</div>
+      ${catData.map(({cat,pct})=>`<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${cat}</span><span class="f12 fw7" style="color:${CCAT[cat]}">${emojiLevel(pct)} ${pct}%</span></div>${bar(pct,CCAT[cat],5)}</div>`).join('')}
+    </div>`;
+  }
+  html+=`<div class="card"><div class="label mb14">Visión global</div><div style="display:flex;justify-content:space-around">
+    <div class="text-center">${ring(hPct,76,5,'#00d4aa')}<div class="f11 c-muted mt6">Hábitos</div></div>
+    <div class="text-center">${ring(mPct,76,5,'#6366f1')}<div class="f11 c-muted mt6">Metas</div></div>
+    <div class="text-center">${ring(ingresosMes?Math.min(100,Math.round(gastosMes/ingresosMes*100)):0,76,5,'#ef4444')}<div class="f11 c-muted mt6">Gasto/Ingreso</div></div>
+  </div></div>`;
+  document.getElementById('page-inicio').innerHTML=html;
+}
+
+// ══ HÁBITOS ═════════════════════════════════════════════════════════════════
+function renderHabitos(){
+  const{habitos,comp}=state;
+  const td=today(),racha=calcRacha();
+  const completados=habitos.filter(h=>comp[h.id]===td).length,total=habitos.length;
+  const pct=total?Math.round(completados/total*100):0;
+  const cats=[...new Set(habitos.map(h=>h.categoria))];
+  let html=`<div class="page-title">Mis Hábitos</div>
+  <div class="grid2">
+    <div class="card"><div class="label">Racha</div><div class="f30 fw8 c-amber">🔥 ${racha}</div><div class="f11 c-dim">días seguidos</div></div>
+    <div class="card"><div class="label">Hoy</div><div class="f30 fw8 c-teal">${pct}%</div><div class="f11 c-dim">${completados}/${total} hábitos</div></div>
+  </div>
+  <div class="card mb14"><div class="flex-between mb8"><span class="f13 c-sub">Progreso del día</span><span class="f13 fw7 c-teal">${emojiLevel(pct)} ${completados} de ${total}</span></div>${bar(pct,'#00d4aa',10)}</div>`;
+  if(!habitos.length)html+=`<div class="empty-state"><div class="es-ico">🌱</div><div class="es-t">Aún no tienes hábitos.</div></div>`;
+  cats.forEach(cat=>{
+    const col=CCAT[cat]||'#00d4aa';
+    html+=`<div class="mb16"><div class="section-cat"><div class="cat-dot" style="background:${col}"></div><span class="section-cat-label" style="color:${col}">${cat}</span></div>`;
+    habitos.filter(h=>h.categoria===cat).forEach(h=>{
+      const done=comp[h.id]===td;
+      html+=`<div class="habit-item${done?' done':''}" onclick="toggleHabito(${h.id})">
+        <div class="check${done?' done':''}"></div>
+        <span style="font-size:18px;flex-shrink:0">${h.emoji||'✅'}</span>
+        <div style="flex:1"><div class="habit-name${done?' done':''}">${h.nombre}</div>${h.identidad?`<div class="habit-id">${h.identidad}</div>`:''}</div>
+        ${done?'<span class="xp-tag">+10 XP</span>':''}
+        <button class="btn sm" onclick="event.stopPropagation();editHabito(${h.id})" style="padding:5px 9px">✏️</button>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  html+=`<button class="btn" onclick="newHabito()" style="padding:13px;font-size:14px;border-radius:12px">+ Nuevo hábito</button>`;
+  document.getElementById('page-habitos').innerHTML=html;
+}
+function toggleHabito(id){
+  const td=today(),done=state.comp[id]===td;
+  if(done){delete state.comp[id];state.xp=Math.max(0,state.xp-10);}
+  else{state.comp[id]=td;state.xp+=10;}
+  save('comp');save('xp');updateHeader();renderHabitos();
+}
+function newHabito(){openHabitoModal(null);}
+function editHabito(id){openHabitoModal(state.habitos.find(h=>h.id===id));}
+function openHabitoModal(h){
+  const isNew=!h,emSel=h?.emoji||'✅';
+  document.getElementById('modal-title').textContent=isNew?'Nuevo hábito':'Editar hábito';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Emoji</div>
+      <div class="emoji-picker">${EMOJIS_H.map(e=>`<button class="emoji-btn${e===emSel?' sel':''}" onclick="selEmoji(this,'h-emoji')">${e}</button>`).join('')}</div>
+      <input type="hidden" id="h-emoji" value="${emSel}"/></div>
+    <div class="form-row"><div class="sublabel">Nombre *</div><input class="inp" id="h-nombre" value="${h?.nombre||''}" placeholder="Ej: Ejercicio 30 min"/></div>
+    <div class="form-row"><div class="sublabel">Frase de identidad</div><input class="inp" id="h-identidad" value="${h?.identidad||''}" placeholder="Ej: Soy alguien activo"/></div>
+    <div class="form-row"><div class="sublabel">Categoría</div>
+      <select class="inp" id="h-cat">${CATS_H.map(c=>`<option${c===(h?.categoria||'Salud')?' selected':''}>${c}</option>`).join('')}</select></div>
+    <div class="modal-actions">
+      ${!isNew?`<button class="btn danger" onclick="deleteHabito(${h.id})" style="flex:1;padding:10px">🗑 Borrar</button>`:''}
+      <button class="btn" onclick="saveHabito(${isNew?'null':h.id})" style="flex:2;padding:11px">${isNew?'Crear':'Guardar'}</button>
+    </div>`;
+  openModal();
+}
+function saveHabito(id){
+  const nombre=document.getElementById('h-nombre').value.trim();if(!nombre)return;
+  const data={nombre,identidad:document.getElementById('h-identidad').value.trim(),categoria:document.getElementById('h-cat').value,emoji:document.getElementById('h-emoji').value};
+  if(id===null)state.habitos.push({id:nid(state.habitos),...data,creadoEn:today()});
+  else state.habitos=state.habitos.map(h=>h.id===id?{...h,...data}:h);
+  save('habitos');closeModal();renderHabitos();
+}
+function deleteHabito(id){state.habitos=state.habitos.filter(h=>h.id!==id);save('habitos');closeModal();renderHabitos();}
+
+// ══ METAS ═══════════════════════════════════════════════════════════════════
+let expandedMeta=null;
+function renderMetas(){
+  const{metas}=state;
+  let html=`<div class="page-title">Mis Metas</div><div class="f13 c-muted mb14">${metas.length} metas · ${metas.filter(m=>m.submetas.length&&m.submetas.every(s=>s.completado)).length} completadas</div>`;
+  if(!metas.length)html+=`<div class="empty-state"><div class="es-ico">🎯</div><div class="es-t">Ninguna meta todavía.</div></div>`;
+  metas.forEach(meta=>{
+    const comp=meta.submetas.filter(s=>s.completado).length,pct=meta.submetas.length?Math.round(comp/meta.submetas.length*100):0;
+    const col=CCAT[meta.categoria]||'#00d4aa',exp=expandedMeta===meta.id;
+    html+=`<div class="card mb12">
+      <div class="flex gap12 mb10" style="align-items:flex-start">
+        ${ring(pct,64,5,col)}
+        <div style="flex:1"><div class="mb6">${catBadge(meta.categoria)}${meta.deadline?` <span class="cat-badge" style="background:#1e293b;color:#64748b">📅 ${meta.deadline}</span>`:''}</div>
+          <div class="flex gap8" style="align-items:center"><span style="font-size:18px">${meta.emoji||'🎯'}</span><span class="f15 fw7 c-main">${meta.titulo}</span></div>
+          ${meta.descripcion?`<div class="f12 c-muted mt4">${meta.descripcion}</div>`:''}</div>
+        <button class="btn sm" onclick="editMeta(${meta.id})" style="padding:5px 8px;flex-shrink:0">✏️</button>
+      </div>${bar(pct,col,4)}
+      <button class="btn sm w100 mt10" onclick="toggleExpandMeta(${meta.id})">${exp?'▲ Ocultar pasos':`▼ Ver pasos (${comp}/${meta.submetas.length})`}</button>
+      ${exp?`<div class="mt10">${meta.submetas.map(sub=>`<div class="sub-row">
+        <div class="sub-check${sub.completado?' done':''}" onclick="toggleSub(${meta.id},${sub.id})"></div>
+        <span class="sub-text${sub.completado?' done':''}">${sub.texto}</span>
+        <button class="del-btn" onclick="delSub(${meta.id},${sub.id})">×</button>
+      </div>`).join('')}
+      <div class="flex gap8 mt10">
+        <input class="inp" id="sub-inp-${meta.id}" placeholder="Agregar paso..." onkeydown="if(event.key==='Enter')addSub(${meta.id})"/>
+        <button class="btn sm" onclick="addSub(${meta.id})" style="padding:9px 14px;background:#00d4aa;color:#050d1a;border:none;font-weight:700">+</button>
+      </div></div>`:''}
+    </div>`;
+  });
+  html+=`<button class="btn" onclick="newMeta()" style="padding:13px;font-size:14px;border-radius:12px">+ Nueva meta</button>`;
+  document.getElementById('page-metas').innerHTML=html;
+}
+function toggleExpandMeta(id){expandedMeta=expandedMeta===id?null:id;renderMetas();}
+function toggleSub(mId,sId){state.metas=state.metas.map(m=>m.id!==mId?m:{...m,submetas:m.submetas.map(s=>s.id!==sId?s:{...s,completado:!s.completado})});save('metas');renderMetas();}
+function delSub(mId,sId){state.metas=state.metas.map(m=>m.id!==mId?m:{...m,submetas:m.submetas.filter(s=>s.id!==sId)});save('metas');renderMetas();}
+function addSub(mId){const inp=document.getElementById('sub-inp-'+mId);if(!inp||!inp.value.trim())return;state.metas=state.metas.map(m=>m.id!==mId?m:{...m,submetas:[...m.submetas,{id:nid(m.submetas),texto:inp.value.trim(),completado:false}]});save('metas');renderMetas();}
+function newMeta(){openMetaModal(null);}
+function editMeta(id){openMetaModal(state.metas.find(m=>m.id===id));}
+const CATS_M=['Salud','Mente','Trabajo','Relaciones','Dinero','Crecimiento','Educación','General'];
+function openMetaModal(m){
+  const isNew=!m,emSel=m?.emoji||'🎯';
+  document.getElementById('modal-title').textContent=isNew?'Nueva meta':'Editar meta';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Emoji</div>
+      <div class="emoji-picker">${EMOJIS_M.map(e=>`<button class="emoji-btn${e===emSel?' sel':''}" onclick="selEmoji(this,'m-emoji')">${e}</button>`).join('')}</div>
+      <input type="hidden" id="m-emoji" value="${emSel}"/></div>
+    <div class="form-row"><div class="sublabel">Título *</div><input class="inp" id="m-titulo" value="${m?.titulo||''}" placeholder="Ej: Hablar inglés fluido"/></div>
+    <div class="form-row"><div class="sublabel">Descripción</div><input class="inp" id="m-desc" value="${m?.descripcion||''}" placeholder="¿Por qué es importante?"/></div>
+    <div class="form-row"><div class="sublabel">Deadline</div><input class="inp" id="m-deadline" value="${m?.deadline||''}" placeholder="Ej: Dic 2026"/></div>
+    <div class="form-row"><div class="sublabel">Categoría</div>
+      <select class="inp" id="m-cat">${CATS_M.map(c=>`<option${c===(m?.categoria||'Salud')?' selected':''}>${c}</option>`).join('')}</select></div>
+    <div class="modal-actions">
+      ${!isNew?`<button class="btn danger" onclick="deleteMeta(${m.id})" style="flex:1;padding:10px">🗑 Borrar</button>`:''}
+      <button class="btn" onclick="saveMeta(${isNew?'null':m.id})" style="flex:2;padding:11px">${isNew?'Crear':'Guardar'}</button>
+    </div>`;
+  openModal();
+}
+function saveMeta(id){
+  const titulo=document.getElementById('m-titulo').value.trim();if(!titulo)return;
+  const data={titulo,descripcion:document.getElementById('m-desc').value.trim(),deadline:document.getElementById('m-deadline').value.trim(),categoria:document.getElementById('m-cat').value,emoji:document.getElementById('m-emoji').value};
+  if(id===null)state.metas.push({id:nid(state.metas),...data,submetas:[],creadoEn:today()});
+  else state.metas=state.metas.map(m=>m.id===id?{...m,...data}:m);
+  save('metas');closeModal();renderMetas();
+}
+function deleteMeta(id){state.metas=state.metas.filter(m=>m.id!==id);save('metas');closeModal();if(expandedMeta===id)expandedMeta=null;renderMetas();}
+
+// ══ DINERO ══════════════════════════════════════════════════════════════════
+function renderDinero(){
+  let html=`<div class="page-title">💳 Finanzas</div>
+  <div class="fin-tabs">
+    <button class="fin-tab${finTab==='resumen'?' active':''}" onclick="setFinTab('resumen')">📊 Resumen</button>
+    <button class="fin-tab${finTab==='semana'?' active':''}" onclick="setFinTab('semana')">📅 Semana</button>
+    <button class="fin-tab${finTab==='mes'?' active':''}" onclick="setFinTab('mes')">🗓 Mes</button>
+    <button class="fin-tab${finTab==='deudas'?' active':''}" onclick="setFinTab('deudas')">💸 Deudas</button>
+    <button class="fin-tab${finTab==='ingresos'?' active':''}" onclick="setFinTab('ingresos')">💵 Ingresos</button>
+  </div>`;
+
+  if(finTab==='resumen') html+=renderFinResumen();
+  else if(finTab==='semana') html+=renderFinSemana();
+  else if(finTab==='mes') html+=renderFinMes();
+  else if(finTab==='deudas') html+=renderFinDeudas();
+  else if(finTab==='ingresos') html+=renderFinIngresos();
+
+  document.getElementById('page-dinero').innerHTML=html;
+}
+function setFinTab(t){finTab=t;renderDinero();}
+
+// ─── RESUMEN ─────────────────────────────────────────────────────────────────
+function renderFinResumen(){
+  const mes=today().slice(0,7);
+  const txsMes=state.txs.filter(t=>t.fecha.startsWith(mes)&&t.tipo==='gasto');
+  const ingMes=state.ingresos.filter(i=>i.fecha.startsWith(mes));
+  const totalGasto=txsMes.reduce((s,t)=>s+t.monto,0);
+  const totalIng=ingMes.reduce((s,i)=>s+i.monto,0);
+  const balance=totalIng-totalGasto;
+  const deudaTotal=state.deudas.reduce((s,d)=>s+(d.monto-d.pagado),0);
+
+  // por categoría
+  const porCat={};
+  txsMes.forEach(t=>{porCat[t.categoria]=(porCat[t.categoria]||0)+t.monto;});
+  const catArr=Object.entries(porCat).sort((a,b)=>b[1]-a[1]);
+
+  // por cuenta
+  const porCuenta={};
+  txsMes.forEach(t=>{porCuenta[t.cuenta]=(porCuenta[t.cuenta]||0)+t.monto;});
+
+  let html=`
+  <div class="grid2">
+    <div class="card teal"><div class="label">Ingresos mes</div><div class="f22 fw8 c-teal">${fmt(totalIng)}</div></div>
+    <div class="card red"><div class="label">Gastos mes</div><div class="f22 fw8 c-red">${fmt(totalGasto)}</div></div>
+  </div>
+  <div class="card mb12">
+    <div class="label mb4">Balance del mes</div>
+    <div class="f22 fw8" style="color:${balance>=0?'#00d4aa':'#ef4444'}">${fmt(balance)}</div>
+    <div class="f11 c-muted mt4">${balance>=0?'✅ Estás gastando menos de lo que ganas':'⚠️ Gastas más de lo que ingresas'}</div>
+    ${totalIng>0?bar(Math.min(100,Math.round(totalGasto/totalIng*100)),balance>=0?'#00d4aa':'#ef4444',8):''}
+  </div>
+  ${deudaTotal>0?`<div class="card red mb12"><div class="flex-between"><div><div class="label c-red">Deuda pendiente</div><div class="f22 fw8 c-red">${fmt(deudaTotal)}</div></div><div class="f30">💸</div></div></div>`:''}
+  
+  <div class="card mb12">
+    <div class="flex-between mb12"><span class="label">Gastos por categoría</span><span class="f11 c-muted">${new Date().toLocaleString('es',{month:'long'})}</span></div>
+    ${catArr.length===0?'<div class="f13 c-muted text-center" style="padding:16px">Sin gastos este mes</div>':''}
+    ${catArr.map(([cat,monto])=>{
+      const pct=totalGasto?Math.round(monto/totalGasto*100):0;
+      const col=CAT_TX_COLOR[cat]||'#64748b';
+      return `<div class="mb10">
+        <div class="flex-between mb4">
+          <span class="f13 c-mid">${CAT_TX_EMO[cat]||'📦'} ${cat}</span>
+          <span class="f12 fw7" style="color:${col}">${fmt(monto)} <span class="c-muted f11">(${pct}%)</span></span>
+        </div>${bar(pct,col,5)}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="card mb12">
+    <div class="label mb12">Por tarjeta / cuenta</div>
+    ${Object.entries(porCuenta).sort((a,b)=>b[1]-a[1]).map(([cuenta,monto])=>`
+      <div class="flex-between" style="padding:8px 0;border-bottom:1px solid #1e293b">
+        <span class="f13 c-mid">💳 ${cuenta}</span>
+        <span class="f13 fw7 c-red">${fmt(monto)}</span>
+      </div>`).join('') || '<div class="f13 c-muted text-center" style="padding:12px">Sin datos</div>'}
+  </div>
+
+  <button class="btn" onclick="openNuevaTx()" style="padding:13px;font-size:14px;border-radius:12px;margin-bottom:8px">+ Registrar gasto</button>
+  <button class="btn purple" onclick="openNuevoIngreso()" style="padding:12px;font-size:13px;border-radius:12px">+ Registrar ingreso</button>`;
+  return html;
+}
+
+// ─── SEMANA ───────────────────────────────────────────────────────────────────
+function getWeekRange(offset){
+  const now=new Date();
+  const day=now.getDay()||7;
+  const mon=new Date(now);mon.setDate(now.getDate()-day+1+offset*7);
+  const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  return{start:mon.toISOString().slice(0,10),end:sun.toISOString().slice(0,10),mon,sun};
+}
+function renderFinSemana(){
+  const{start,end,mon,sun}=getWeekRange(weekOffset);
+  const txsSem=state.txs.filter(t=>t.fecha>=start&&t.fecha<=end);
+  const ingSem=state.ingresos.filter(i=>i.fecha>=start&&i.fecha<=end);
+  const totalG=txsSem.filter(t=>t.tipo==='gasto').reduce((s,t)=>s+t.monto,0);
+  const totalI=ingSem.reduce((s,i)=>s+i.monto,0);
+  const label=weekOffset===0?'Esta semana':weekOffset===-1?'Semana pasada':`${mon.toLocaleDateString('es',{day:'numeric',month:'short'})} – ${sun.toLocaleDateString('es',{day:'numeric',month:'short'})}`;
+  // agrupar por día
+  const porDia={};
+  txsSem.filter(t=>t.tipo==='gasto').forEach(t=>{porDia[t.fecha]=(porDia[t.fecha]||0)+t.monto;});
+  const all=[...txsSem,...ingSem].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+
+  let html=`
+  <div class="week-nav">
+    <button onclick="weekOffset--;renderDinero()">‹</button>
+    <span>${label}</span>
+    <button onclick="weekOffset++;renderDinero()" ${weekOffset>=0?'disabled style="opacity:.3"':''}>›</button>
+  </div>
+  <div class="grid2 mb12">
+    <div class="card teal"><div class="label">Ingresos</div><div class="f20 fw8 c-teal">${fmt(totalI)}</div></div>
+    <div class="card red"><div class="label">Gastos</div><div class="f20 fw8 c-red">${fmt(totalG)}</div></div>
+  </div>`;
+
+  // Totales por día de la semana
+  const dias=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const maxDia=Math.max(...Object.values(porDia),1);
+  html+=`<div class="card mb12"><div class="label mb10">Gastos por día</div><div style="display:flex;align-items:flex-end;gap:6px;height:60px">`;
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    const key=d.toISOString().slice(0,10);
+    const monto=porDia[key]||0;
+    const h=monto?Math.max(4,Math.round(monto/maxDia*50)):2;
+    const isToday=key===today();
+    html+=`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div style="width:100%;background:${isToday?'#00d4aa':'#6366f1'};height:${h}px;border-radius:4px 4px 0 0;opacity:${monto?1:.2}"></div>
+      <div class="f10" style="color:${isToday?'#00d4aa':'#64748b'}">${dias[i]}</div>
+    </div>`;
+  }
+  html+=`</div></div>`;
+
+  html+=`<div class="card mb12"><div class="label mb10">Movimientos</div>`;
+  if(!all.length)html+=`<div class="f13 c-muted text-center" style="padding:16px">Sin movimientos esta semana</div>`;
+  all.forEach(t=>{
+    const esIngreso=!!t.tipo&&t.tipo!=='gasto';
+    const cat=t.categoria||t.tipo_ingreso||'Ingreso';
+    const col=esIngreso?'#00d4aa':'#ef4444';
+    const emo=esIngreso?'💵':(CAT_TX_EMO[cat]||'📦');
+    html+=`<div class="tx-item">
+      <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'#64748b')}22">${emo}</div>
+      <div class="tx-info">
+        <div class="tx-name">${t.nota||cat}</div>
+        <div class="tx-meta">${t.cuenta||''} · ${new Date(t.fecha+'T12:00:00').toLocaleDateString('es',{weekday:'short',day:'numeric'})}</div>
+      </div>
+      <div>
+        <div class="tx-amount ${esIngreso?'ingreso':'gasto'}">${esIngreso?'+':'-'}${fmt(t.monto)}</div>
+        <button class="del-btn" onclick="${esIngreso?`deleteIngreso(${t.id})`:`deleteTx(${t.id})`}" style="float:right;color:#475569">×</button>
+      </div>
+    </div>`;
+  });
+  html+=`</div>
+  <button class="btn" onclick="openNuevaTx()" style="padding:12px;font-size:13px;border-radius:12px;margin-bottom:8px">+ Gasto</button>
+  <button class="btn purple" onclick="openNuevoIngreso()" style="padding:11px;font-size:13px;border-radius:12px">+ Ingreso</button>`;
+  return html;
+}
+
+// ─── MES ─────────────────────────────────────────────────────────────────────
+let mesOffset=0;
+function renderFinMes(){
+  const now=new Date();now.setMonth(now.getMonth()+mesOffset);
+  const mes=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const mesLabel=now.toLocaleString('es',{month:'long',year:'numeric'});
+  const txsMes=state.txs.filter(t=>t.fecha.startsWith(mes)&&t.tipo==='gasto');
+  const ingMes=state.ingresos.filter(i=>i.fecha.startsWith(mes));
+  const totalG=txsMes.reduce((s,t)=>s+t.monto,0);
+  const totalI=ingMes.reduce((s,i)=>s+i.monto,0);
+  const porCat={};txsMes.forEach(t=>{porCat[t.categoria]=(porCat[t.categoria]||0)+t.monto;});
+  const catArr=Object.entries(porCat).sort((a,b)=>b[1]-a[1]);
+  const all=[...txsMes,...ingMes].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+
+  let html=`
+  <div class="week-nav">
+    <button onclick="mesOffset--;renderDinero()">‹</button>
+    <span style="text-transform:capitalize">${mesLabel}</span>
+    <button onclick="mesOffset++;renderDinero()" ${mesOffset>=0?'disabled style="opacity:.3"':''}>›</button>
+  </div>
+  <div class="grid2 mb12">
+    <div class="card teal"><div class="label">Ingresos</div><div class="f20 fw8 c-teal">${fmt(totalI)}</div></div>
+    <div class="card red"><div class="label">Gastos</div><div class="f20 fw8 c-red">${fmt(totalG)}</div></div>
+  </div>
+  <div class="card mb12">
+    <div class="flex-between mb4"><span class="label">Balance</span><span class="f14 fw8" style="color:${totalI-totalG>=0?'#00d4aa':'#ef4444'}">${fmt(totalI-totalG)}</span></div>
+    ${totalI>0?bar(Math.min(100,Math.round(totalG/totalI*100)),totalI>=totalG?'#00d4aa':'#ef4444',6):''}
+  </div>
+  <div class="card mb12">
+    <div class="label mb10">Por categoría</div>
+    ${catArr.length?catArr.map(([cat,monto])=>{
+      const pct=totalG?Math.round(monto/totalG*100):0;
+      const col=CAT_TX_COLOR[cat]||'#64748b';
+      return `<div class="mb10"><div class="flex-between mb4"><span class="f13 c-mid">${CAT_TX_EMO[cat]||'📦'} ${cat}</span><span class="f12 fw7" style="color:${col}">${fmt(monto)}</span></div>${bar(pct,col,5)}</div>`;
+    }).join(''):'<div class="f13 c-muted text-center" style="padding:12px">Sin gastos</div>'}
+  </div>
+  <div class="card mb12"><div class="label mb10">Todos los movimientos</div>
+    ${all.length===0?'<div class="f13 c-muted text-center" style="padding:12px">Sin movimientos</div>':''}
+    ${all.map(t=>{
+      const esI=!t.tipo||t.tipo!=='gasto'||!!t.tipo_ingreso;
+      const esIngreso=state.ingresos.some(i=>i.id===t.id);
+      const cat=t.categoria||t.tipo_ingreso||'Ingreso';
+      const emo=esIngreso?'💵':(CAT_TX_EMO[cat]||'📦');
+      return `<div class="tx-item">
+        <div class="tx-ico" style="background:${(CAT_TX_COLOR[cat]||'#64748b')}22">${emo}</div>
+        <div class="tx-info"><div class="tx-name">${t.nota||cat}</div><div class="tx-meta">${t.cuenta||''} · ${new Date(t.fecha+'T12:00:00').toLocaleDateString('es',{day:'numeric',month:'short'})}</div></div>
+        <div><div class="tx-amount ${esIngreso?'ingreso':'gasto'}">${esIngreso?'+':'-'}${fmt(t.monto)}</div>
+          <button class="del-btn" onclick="${esIngreso?`deleteIngreso(${t.id})`:`deleteTx(${t.id})`}" style="float:right">×</button></div>
+      </div>`;
+    }).join('')}
+  </div>`;
+  return html;
+}
+
+// ─── DEUDAS ───────────────────────────────────────────────────────────────────
+function renderFinDeudas(){
+  const{deudas}=state;
+  const total=deudas.reduce((s,d)=>s+(d.monto-(d.pagado||0)),0);
+  let html=``;
+  if(total>0)html+=`<div class="card red mb12"><div class="label">Total pendiente</div><div class="f22 fw8 c-red">${fmt(total)}</div></div>`;
+  if(!deudas.length)html+=`<div class="empty-state"><div class="es-ico">🎉</div><div class="es-t">Sin deudas registradas.</div></div>`;
+  deudas.forEach(d=>{
+    const pend=d.monto-(d.pagado||0);
+    const pct=Math.round((d.pagado||0)/d.monto*100);
+    const color=pct>=100?'#00d4aa':pct>=50?'#f59e0b':'#ef4444';
+    html+=`<div class="card mb12">
+      <div class="flex-between mb8">
+        <div>
+          <div class="f14 fw7 c-main">${d.nombre}</div>
+          <div class="f11 c-muted">${d.prestamista||''} ${d.deadline?'· 📅 '+d.deadline:''}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="f18 fw8" style="color:${color}">${fmt(pend)}</div>
+          <div class="f11 c-muted">de ${fmt(d.monto)}</div>
+        </div>
+      </div>
+      ${bar(pct,color,6)}
+      <div class="flex-between mt6 mb10">
+        <span class="pill ${pct>=100?'pill-green':pct>=50?'pill-amber':'pill-red'}">${pct>=100?'✓ Pagada':pct+'% pagado'}</span>
+        <button class="btn sm" onclick="editDeuda(${d.id})" style="font-size:11px">✏️ Editar</button>
+      </div>
+      ${pct<100?`<div class="flex gap6">
+        <input type="number" class="inp" id="pago-${d.id}" placeholder="Abonar $..."/>
+        <button style="background:#00d4aa;color:#050d1a;border:none;border-radius:8px;padding:0 14px;font-weight:700;cursor:pointer;font-size:15px" onclick="abonarDeuda(${d.id})">+</button>
+      </div>`:''}
+    </div>`;
+  });
+  html+=`<button class="btn" onclick="openNuevaDeuda()" style="padding:13px;font-size:14px;border-radius:12px">+ Agregar deuda / préstamo</button>`;
+  return html;
+}
+function abonarDeuda(id){
+  const inp=document.getElementById('pago-'+id);
+  const m=parseFloat(inp?.value||0);if(!m||m<=0)return;
+  state.deudas=state.deudas.map(d=>d.id!==id?d:{...d,pagado:Math.min(d.monto,(d.pagado||0)+m)});
+  save('deudas');if(inp)inp.value='';renderDinero();
+}
+function openNuevaDeuda(){openDeudaModal(null);}
+function editDeuda(id){openDeudaModal(state.deudas.find(d=>d.id===id));}
+function openDeudaModal(d){
+  const isNew=!d;
+  document.getElementById('modal-title').textContent=isNew?'Nueva deuda / préstamo':'Editar deuda';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Nombre *</div><input class="inp" id="d-nombre" value="${d?.nombre||''}" placeholder="Ej: Nu TDC, Didi Préstamo..."/></div>
+    <div class="form-row"><div class="sublabel">Acreedor / prestamista</div>
+      <select class="inp" id="d-prestamista">
+        ${PRESTAMOS.map(p=>`<option${p===(d?.prestamista||'')?' selected':''}>${p}</option>`).join('')}
+        <option value="Otro">Otro</option>
+      </select></div>
+    <div class="form-row2">
+      <div><div class="sublabel">Monto total *</div><input type="number" class="inp" id="d-monto" value="${d?.monto||''}" placeholder="0"/></div>
+      <div><div class="sublabel">Ya pagado</div><input type="number" class="inp" id="d-pagado" value="${d?.pagado||0}" placeholder="0"/></div>
+    </div>
+    <div class="form-row"><div class="sublabel">Fecha límite</div><input class="inp" id="d-deadline" value="${d?.deadline||''}" placeholder="Ej: Mar 2026"/></div>
+    <div class="modal-actions">
+      ${!isNew?`<button class="btn danger" onclick="deleteDeuda(${d.id})" style="flex:1;padding:10px">🗑</button>`:''}
+      <button class="btn" onclick="saveDeuda(${isNew?'null':d.id})" style="flex:2;padding:11px">${isNew?'Agregar':'Guardar'}</button>
+    </div>`;
+  openModal();
+}
+function saveDeuda(id){
+  const nombre=document.getElementById('d-nombre').value.trim();
+  const monto=parseFloat(document.getElementById('d-monto').value);
+  if(!nombre||!monto)return;
+  const data={nombre,prestamista:document.getElementById('d-prestamista').value,monto,pagado:parseFloat(document.getElementById('d-pagado').value)||0,deadline:document.getElementById('d-deadline').value.trim()};
+  if(id===null)state.deudas.push({id:nid(state.deudas),...data});
+  else state.deudas=state.deudas.map(d=>d.id===id?{...d,...data}:d);
+  save('deudas');closeModal();renderDinero();
+}
+function deleteDeuda(id){state.deudas=state.deudas.filter(d=>d.id!==id);save('deudas');closeModal();renderDinero();}
+
+// ─── INGRESOS ────────────────────────────────────────────────────────────────
+function renderFinIngresos(){
+  const mes=today().slice(0,7);
+  const ingMes=state.ingresos.filter(i=>i.fecha.startsWith(mes));
+  const total=ingMes.reduce((s,i)=>s+i.monto,0);
+  const porTipo={};ingMes.forEach(i=>{porTipo[i.tipo_ingreso]=(porTipo[i.tipo_ingreso]||0)+i.monto;});
+  let html=`
+  <div class="card teal mb12">
+    <div class="label">Ingresos este mes</div>
+    <div class="f22 fw8 c-teal">${fmt(total)}</div>
+    <div class="f11 c-muted mt4">${ingMes.length} registros</div>
+  </div>
+  ${Object.entries(porTipo).length?`<div class="card mb12"><div class="label mb10">Por tipo</div>
+    ${Object.entries(porTipo).map(([tipo,m])=>`<div class="flex-between" style="padding:8px 0;border-bottom:1px solid #1e293b">
+      <span class="f13 c-mid">${tipo==='Sueldo'?'💼':tipo==='Bono'?'🎁':'💰'} ${tipo}</span>
+      <span class="f13 fw7 c-teal">${fmt(m)}</span>
+    </div>`).join('')}
+  </div>`:''}
+  <div class="card mb12"><div class="label mb10">Historial</div>
+    ${state.ingresos.length===0?'<div class="f13 c-muted text-center" style="padding:12px">Sin ingresos registrados</div>':''}
+    ${[...state.ingresos].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,20).map(i=>`
+    <div class="tx-item">
+      <div class="tx-ico" style="background:#00d4aa22">${i.tipo_ingreso==='Sueldo'?'💼':i.tipo_ingreso==='Bono'?'🎁':'💰'}</div>
+      <div class="tx-info"><div class="tx-name">${i.nota||i.tipo_ingreso}</div><div class="tx-meta">${i.cuenta} · ${new Date(i.fecha+'T12:00:00').toLocaleDateString('es',{day:'numeric',month:'short',year:'numeric'})}</div></div>
+      <div><div class="tx-amount ingreso">+${fmt(i.monto)}</div><button class="del-btn" onclick="deleteIngreso(${i.id})" style="float:right">×</button></div>
+    </div>`).join('')}
+  </div>
+  <button class="btn" onclick="openNuevoIngreso()" style="padding:13px;font-size:14px;border-radius:12px">+ Registrar ingreso</button>`;
+  return html;
+}
+
+// ─── MODALES TRANSACCIONES ────────────────────────────────────────────────────
+function openNuevaTx(){
+  finTipo='gasto';
+  document.getElementById('modal-title').textContent='Registrar gasto';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Categoría</div>
+      <select class="inp" id="tx-cat">${CATS_TX.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="sublabel">Tarjeta / Cuenta</div>
+      <select class="inp" id="tx-cuenta">${CUENTAS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="sublabel">Monto *</div><input type="number" class="inp" id="tx-monto" placeholder="0.00"/></div>
+    <div class="form-row"><div class="sublabel">Nota</div><input class="inp" id="tx-nota" placeholder="Ej: Súper del sábado, gasolina..."/></div>
+    <div class="form-row"><div class="sublabel">Fecha</div><input type="date" class="inp" id="tx-fecha" value="${today()}"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="saveTx()" style="padding:11px">Guardar gasto</button>
+    </div>`;
+  openModal();
+}
+function saveTx(){
+  const monto=parseFloat(document.getElementById('tx-monto').value);if(!monto||monto<=0)return;
+  const data={id:nid(state.txs),tipo:'gasto',categoria:document.getElementById('tx-cat').value,cuenta:document.getElementById('tx-cuenta').value,monto,nota:document.getElementById('tx-nota').value.trim(),fecha:document.getElementById('tx-fecha').value};
+  state.txs.push(data);save('txs');closeModal();renderDinero();
+}
+function deleteTx(id){state.txs=state.txs.filter(t=>t.id!==id);save('txs');renderDinero();}
+
+function openNuevoIngreso(){
+  document.getElementById('modal-title').textContent='Registrar ingreso';
+  document.getElementById('modal-body').innerHTML=`
+    <div class="form-row"><div class="sublabel">Tipo de ingreso</div>
+      <select class="inp" id="ing-tipo">
+        <option>Sueldo</option><option>Bono</option><option>Freelance</option><option>Venta</option><option>Otro</option>
+      </select></div>
+    <div class="form-row"><div class="sublabel">Cuenta donde entra</div>
+      <select class="inp" id="ing-cuenta">${CUENTAS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="sublabel">Monto *</div><input type="number" class="inp" id="ing-monto" placeholder="0.00"/></div>
+    <div class="form-row"><div class="sublabel">Nota</div><input class="inp" id="ing-nota" placeholder="Ej: Quincena, bono fin de año..."/></div>
+    <div class="form-row"><div class="sublabel">Fecha</div><input type="date" class="inp" id="ing-fecha" value="${today()}"/></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="saveIngreso()" style="padding:11px">Guardar ingreso</button>
+    </div>`;
+  openModal();
+}
+function saveIngreso(){
+  const monto=parseFloat(document.getElementById('ing-monto').value);if(!monto||monto<=0)return;
+  const data={id:nid(state.ingresos),tipo_ingreso:document.getElementById('ing-tipo').value,cuenta:document.getElementById('ing-cuenta').value,monto,nota:document.getElementById('ing-nota').value.trim(),fecha:document.getElementById('ing-fecha').value};
+  state.ingresos.push(data);save('ingresos');closeModal();renderDinero();
+}
+function deleteIngreso(id){state.ingresos=state.ingresos.filter(i=>i.id!==id);save('ingresos');renderDinero();}
+
+// ══ DIARIO ══════════════════════════════════════════════════════════════════
+let expandedEntry=null,diarioHumor=3,diarioFoto=null,diarioDraft='';
+function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function keepDraft(){const t=document.getElementById('diario-txt');if(t)diarioDraft=t.value;}
+function renderDiario(){
+  const{diario}=state;
+  let html=`<div class="page-title">Diario Personal</div>
+  <div class="card mb14">
+    <div class="sublabel">¿Cómo te sientes hoy?</div>
+    <div class="humor-row">${HUMORES.map((h,i)=>`<button class="humor-btn${diarioHumor===i+1?' sel':''}" onclick="setHumor(${i+1})">${h}</button>`).join('')}</div>
+    <textarea class="inp mb10" id="diario-txt" rows="4" placeholder="¿Qué pasó hoy? ¿Qué aprendiste? ¿Qué agradeces?...">${escH(diarioDraft)}</textarea>
+    ${diarioFoto?`<div class="dia-prev mb10"><img src="${diarioFoto}" alt="Foto del día"/><button class="dia-x" onclick="quitarFoto()" aria-label="Quitar foto">×</button></div>`:`<div class="flex gap8 mb10"><label class="btn sm dia-add">📷 Tomar foto<input type="file" accept="image/*" capture="environment" onchange="pickFoto(this)" hidden/></label><label class="btn sm dia-add">🖼️ Galería<input type="file" accept="image/*" onchange="pickFoto(this)" hidden/></label></div>`}
+    <button class="btn" onclick="guardarEntrada()">Guardar entrada</button>
+  </div>`;
+  if(!diario.length)html+=`<div class="empty-state"><div class="es-ico">📓</div><div class="es-t">Tu diario está vacío.</div></div>`;
+  diario.forEach(e=>{
+    const exp=expandedEntry===e.id;
+    html+=`<div class="card mb10" onclick="toggleEntry(${e.id})" style="cursor:pointer">
+      <div class="flex-between">
+        <div class="flex gap8" style="align-items:center"><span style="font-size:18px">${HUMORES[e.humor-1]}</span><span class="f12 c-muted">${new Date(e.fecha+'T12:00:00').toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}</span></div>
+        <div class="flex gap6"><span class="f13 c-dim">${exp?'▲':'▼'}</span><button class="del-btn" onclick="event.stopPropagation();deleteEntrada(${e.id})" style="font-size:16px">×</button></div>
+      </div>
+      ${exp?`${e.foto?`<img class="dia-img" src="${e.foto}" alt="Foto del día"/>`:''}${e.texto?`<div class="entry-body">${e.texto}</div>`:''}`:`<div class="flex gap10" style="align-items:center;margin-top:6px">${e.foto?`<img class="dia-thumb" src="${e.foto}" alt=""/>`:''}<div class="entry-preview" style="margin-top:0;min-width:0">${e.texto||'📷 Foto'}</div></div>`}
+    </div>`;
+  });
+  document.getElementById('page-diario').innerHTML=html;
+}
+function setHumor(n){keepDraft();diarioHumor=n;renderDiario();}
+function quitarFoto(){keepDraft();diarioFoto=null;renderDiario();}
+function pickFoto(inp){
+  const f=inp.files[0];if(!f)return;keepDraft();
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const r=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    diarioFoto=c.toDataURL('image/jpeg',.72);renderDiario();};
+    im.src=rd.result;};
+  rd.readAsDataURL(f);
+}
+function toggleEntry(id){expandedEntry=expandedEntry===id?null:id;renderDiario();}
+function guardarEntrada(){
+  const txt=document.getElementById('diario-txt').value.trim();if(!txt&&!diarioFoto)return;
+  const en={id:nid(state.diario),fecha:today(),texto:txt,humor:diarioHumor,ts:Date.now()};
+  if(diarioFoto)en.foto=diarioFoto;
+  state.diario.unshift(en);
+  try{localStorage.setItem(KEY+'diario',JSON.stringify(state.diario));}
+  catch(e){state.diario.shift();diarioDraft=txt;alert('No hay espacio para guardar esta foto. Borra fotos de entradas anteriores o guarda la entrada sin foto.');renderDiario();return;}
+  diarioFoto=null;diarioDraft='';renderDiario();
+}
+function deleteEntrada(id){state.diario=state.diario.filter(e=>e.id!==id);save('diario');if(expandedEntry===id)expandedEntry=null;renderDiario();}
+
+// ══ MENÚ SEMANAL ════════════════════════════════════════════════════════════
+const MN_L=['Desayuno','Colación 1','Comida','Colación 2','Cena'];
+const MN_R={
+hrv:'Huevo revuelto con verduras|Aerosol, cebolla, ½ diente de ajo y 1 taza de champiñones; agrega 2–3 huevos.',
+omel:'Omelette con vegetales|2–3 huevos, 30 g espinacas, 30 g cebolla, 30 g champiñones, <5 ml aceite.',
+sand:'Sandwich de pollo|1 pan Thins, 100 g pollo o pavo, 1 rebanada de jamón, mayonesa light, lechuga, tomate, cebolla.',
+coc:'Huevos cocidos con ensalada|2–3 huevos, 50 g espinacas, 50 g champiñones, 50 g tomate, 10 ml aceite de oliva.',
+sal:'Huevo con salchicha|2–3 huevos revueltos, 2 salchichas de pavo, pico de gallo.',
+bol:'Bollito de proteína|1 medida de proteína, 1 huevo, 1 cdita de aceite o mantequilla; microondas 90 seg.',
+rol:'Rollitos de pepino y pollo|1 taza de pepino en filetes, 100–120 g de pollo o atún, ⅓ aguacate.',
+fnq:'Fresas, nueces y queso|8 fresas, 3 cdas de cottage, 1½ nueces.',
+cha:'Chiles rellenos de pollo|2 chiles poblanos, 120 g pechuga, ¼ taza champiñones, cebolla y cilantro; a la parrilla.',
+chq:'Chiles rellenos de queso|2 chiles poblanos, 100 g de queso panela en cubos; a la parrilla.'};
+const MENU=[
+[[ 'hrv','Yogur natural 0% (150 g) + pera','Sopa de verduras con pollo|1 taza de verduras en caldo de jitomate, pechuga sin piel desmenuzada.','Requesón (75 g) + mango','Ensalada de pollo a la parrilla con papa|3 tazas de lechuga, ½ papa cocida, 120 g de pollo, 1 cdita de aderezo light.'],
+['omel','Yogur griego sin azúcar (120 g) + durazno','Fajitas de pollo|Pimiento y cebolla morada en láminas, 180 g de pollo en tiras, cilantro y orégano.','Queso manchego (25 g) + ciruela','Ensalada de lechuga, pollo y nuez|1–1.5 taza de lechuga, 125 g de pollo, ½ pimiento, ¼ cebolla, ajonjolí, nuez molida, vinagre de manzana, aceite de oliva y limón.'],
+['sand','Queso cottage 4% (3 cdas) + fresas (150 g)','Pollo a la plancha con espinacas|180 g de pechuga sin piel, 1 taza de espinacas, aceite en aerosol.','Mozzarella light (30 g) + guayaba','Rajas con bistec|2–5 chiles poblanos, crema ácida, cebolla, 1 cda mantequilla, 30 g panela, elote, 120 g de bistec bola, 1 tortilla.'],
+['coc','Queso panela (30 g) + uva roja (1 taza)','Pollo a la mostaza|180 g de pechuga sin piel, 1½ cdita de mostaza, 1 taza de calabacita.','rol','Nopales asados con bistec|1–2 nopales con sal y pimienta, 150 g de bistec bola, 1 tortilla, 1 cdita de aceite.'],
+['sal','Requesón (75 g) + zarzamora (150 g)','Salpicón de pollo|2 tostadas horneadas, 120 g de pollo deshebrado, ⅓ aguacate, pico de gallo.','Yogur natural 0% (150 g) + toronja','Chuletas de cerdo con ensalada|150 g de chuleta ahumada, 50 g espinacas, 50 g tomate, 50 g champiñones, limón y aceite de oliva.']],
+[['bol','Queso manchego (25 g) + naranja','cha','Yogur griego sin azúcar (120 g) + tuna','Caldo de res|Verduras cocidas, arroz cocido, 120 g de res, queso panela en cubos, aguacate, tostadas horneadas.'],
+['hrv','Mozzarella light (30 g) + papaya (150 g)','Ensalada de queso panela|1 taza de lechuga romana, 80 g de panela rallado, 1 taza de espinacas cocidas, cottage o requesón.','Queso cottage 4% (3 cdas) + mandarina','Hamburguesa sin pan|120 g de carne con tocino, aderezo, queso, lechuga y cebolla.'],
+['omel','Queso oaxaca (30 g) + sandía (150 g)','Barbacoa con verduras|150 g de barbacoa con verduras al gusto, sin tortilla.','fnq','Pollo a la parrilla con pimientos y papas cambray|Pimiento rebanado, 5 papas cambray (95 g), 120 g de pechuga, aceite en spray.'],
+['sand','Yogur natural 0% (150 g) + piña (150 g)','Salchicha con pico de gallo|3 salchichas de pavo, pico de gallo.','Requesón (75 g) + melón (150 g)','Alambre de pollo|Pimiento, cebolla y jitomate, 150 g de pechuga en cubos, 1 cdita de aceite de oliva, 1 tortilla.'],
+['coc','Yogur griego sin azúcar (120 g) + plátano (½ pza)','Pozole de verduras (sin maíz)|1 plato de pozole con verduras y salsa, sin granos de maíz.','Queso manchego (25 g) + kiwi','Chop suey de pollo|150 g de pollo, apio picado, cebolla, germinado de soya, poca salsa de soya.']],
+[['sal','Queso cottage 4% (3 cdas) + mango','Brochetas de pollo|120 g de pollo con pimiento, cebolla y tomate.','Mozzarella light (30 g) + pera','Rollos de calabacita con requesón|½ calabacita en tiras, ½ jitomate, 9 cdas de requesón, aceite de oliva.'],
+['bol','Queso panela (30 g) + ciruela','Arroz con pollo|½ taza de brócoli al vapor, ¼ taza de arroz cocido, 120 g de pechuga, ⅓ aguacate.','Queso panela con espinacas|30 g de panela, 1 taza de espinacas cocidas, pico de gallo.','Jitomate relleno de carne molida|1 jitomate, 120 g de carne molida, aceitunas verdes, sal, pimienta, aceite.'],
+['hrv','Requesón (75 g) + guayaba','Ensalada de fajitas y guacamole|Lechuga con fajitas de pollo (120 g), guacamole (3 cdas) y pico de gallo.','Yogur natural 0% (150 g) + fresas (150 g)','Brochetas de aceituna y queso|Jitomate cherry, aceituna verde, 90 g de queso oaxaca light, cebolla cambray, albahaca.'],
+['omel','Queso manchego (25 g) + granada china','Chilaquiles con pollo|1½ tazas de lechuga, ½ jitomate, 90 g de pollo, 40 g de oaxaca light, 2 tostadas horneadas, 1 cdita de crema light.','Yogur griego sin azúcar (120 g) + uva roja (1 taza)','Ensalada de camarones|33 camarones medianos, 1 cda de aceite de oliva y sal; a la parrilla o salteados 3 min por lado.'],
+['sand','Mozzarella light (30 g) + toronja','Chilaquiles con bistec|1½ tazas de lechuga, ½ jitomate, 100 g de bistec deshebrado, 40 g de oaxaca light, 2 tostadas, 1 cdita de crema light.','Queso cottage 4% (3 cdas) + zarzamora (150 g)','Picadillo|Zanahoria y papa cocidas, 120 g de carne molida de res, aceite en spray.']],
+[['coc','Queso oaxaca (30 g) + tuna','Pollo a la plancha con ensalada|120 g de pechuga, 50 g espinacas, 100 g tomate, 50 g champiñones, 15 ml de limón y de aceite de oliva.','rol','Bistec encebollado|Cebolla blanca, arroz cocido, 150 g de bistec bola.'],
+['sal','Yogur natural 0% (150 g) + mandarina','Tinga de pollo|Cebolla y ajo, 2 jitomates licuados con ½ chipotle, 120 g de pollo deshebrado, 1 tortilla.','Requesón (75 g) + papaya (150 g)','Ceviche de pescado|180–220 g de pescado blanco, cebolla, jalapeño, cilantro, aceite de oliva, limón, aguacate, tostada deshidratada.'],
+['bol','Yogur griego sin azúcar (120 g) + cerezas (12 pzas)','Pasta con pollo|½ taza de pasta codito, 120 g de pechuga, crema ácida, sobre 3 tazas de lechuga.','Queso manchego (25 g) + sandía (150 g)','Pescado a la plancha|220 g de filete de pescado, aceite en aerosol, champiñones.'],
+['hrv','Queso cottage 4% (3 cdas) + melón (150 g)','Tostadas de deshebrada|1½ tazas de lechuga, ½ jitomate, 120–150 g de res deshebrada, 2 tostadas horneadas, aderezo light.','Mozzarella light (30 g) + piña (150 g)','Pescado empapelado|220 g de mojarra o pescado blanco con mantequilla, cilantro, jengibre, perejil y ajo; al horno con espinacas y calabacitas.'],
+['omel','Queso panela (30 g) + kiwi','chq','fnq','Tostadas de camarón y chipotle|24 camarones, chipotle adobado, crema light, tostadas horneadas, lechuga.']]];
+const COMPRAS=[
+{'Proteínas':'Pechuga de pollo (~1.3 kg)|Huevo (24 pzas)|Salchicha de pavo (1 paquete)|Bistec de res (300 g)|Barbacoa (300 g)|Queso panela (extra para ensaladas)','Lácteos':'Yogur natural 0%|Yogur griego|Queso cottage|Queso panela|Requesón','Frutas':'Pera|Durazno|Fresas|Uva roja|Zarzamora|Naranja|Papaya|Sandía|Piña','Verduras':'Espinacas|Champiñones|Jitomate/tomate|Cebolla|Ajo|Pimiento|Calabacita|Lechuga|Chile poblano|Aguacate|Pepino','Cereales':'Tortillas de maíz|Tostadas horneadas Sanissimo|Arroz integral|Pan Thins','Grasas':'Aceite de oliva|Aceite en aerosol|Nueces|Ajonjolí|Vinagre de manzana','Otros':'Mostaza|Pico de gallo (ingredientes)|Guacamole (ingredientes)|Limón|Mayonesa light'},
+{'Proteínas':'Pechuga de pollo (~1 kg)|Huevo (24 pzas)|Bistec bola (400 g)|Res deshebrada (150 g)|Pasta codito (100 g)','Lácteos':'Queso manchego|Queso mozzarella light|Queso oaxaca|Yogur natural 0%|Yogur griego','Frutas':'Plátano|Mango|Ciruela|Guayaba|Granada china|Toronja|Tuna|Mandarina|Cerezas|Melón','Verduras':'Jitomate|Champiñones|Chile poblano|Elote|Nopal|Espinacas|Lechuga|Cebolla|Ajo','Cereales':'Tortillas de maíz|Tostadas horneadas|Pasta codito','Grasas':'Aceite de oliva|Mantequilla|Aceite en aerosol|Crema ácida','Otros':'Chile chipotle|Aderezo light|Crema light|Limón'},
+{'Proteínas':'Pechuga de pollo (~900 g)|Huevo (24 pzas)|Chuleta de cerdo ahumada (300 g)|Carne de res para caldo (240 g)|Carne molida (240 g)|Tocino','Lácteos':'Queso oaxaca|Queso panela|Queso cottage|Yogur griego|Requesón','Frutas':'Pera|Durazno|Fresas|Naranja|Papaya|Sandía|Piña|Uva roja|Zarzamora|Kiwi','Verduras':'Espinacas|Champiñones|Jitomate|Pimiento|Papa cambray|Calabacita|Lechuga|Cebolla|Apio|Germinado de soya','Cereales':'Tostadas horneadas|Arroz integral|Tortillas de maíz','Grasas':'Aceite de oliva|Aceite en aerosol|Vinagre de manzana|Nueces|Ajonjolí','Otros':'Salsa de soya|Aderezo light|Aguacate|Limón'},
+{'Proteínas':'Pescado blanco (mero/tilapia/mojarra, ~1.2 kg)|Camarón crudo mediano (~2 kg)|Carne molida (240 g)|Bistec bola (300 g)|Huevo (12 pzas)','Lácteos':'Queso oaxaca|Requesón|Yogur natural 0%|Yogur griego','Frutas':'Plátano|Mango|Ciruela|Guayaba|Granada china|Toronja|Tuna|Mandarina|Cerezas|Melón','Verduras':'Calabacita|Jitomate|Aceituna verde|Apio|Pepino|Zanahoria|Papa|Cebolla|Jalapeño|Cilantro|Espinacas|Chile verde|Champiñones|Lechuga','Cereales':'Tostadas horneadas/deshidratadas|Arroz cocido','Grasas':'Aceite de oliva|Mantequilla|Aceite en aerosol','Otros':'Chile chipotle adobado|Crema light|Jengibre|Perejil|Ajo|Limón'}];
+function renderMenu(){
+  const m=state.menu,w=m.sem;
+  let h=`<div class="page-title">🍽️ Menú semanal</div>
+  <div class="fin-tabs">${[1,2,3,4].map(n=>`<button class="fin-tab${w===n?' active':''}" onclick="menuSet('sem',${n})">Semana ${n}</button>`).join('')}</div>
+  <div class="fin-tabs"><button class="fin-tab${m.vista==='menu'?' active':''}" onclick="menuSet('vista','menu')">📅 Menú</button><button class="fin-tab${m.vista==='compras'?' active':''}" onclick="menuSet('vista','compras')">🛒 Lista de compras</button></div>`;
+  h+=m.vista==='menu'?menuDias(w):menuCompras(w);
+  document.getElementById('page-menu').innerHTML=h;
+}
+function menuSet(k,v){state.menu[k]=v;save('menu');renderMenu();}
+function menuDias(w){
+  let h='';
+  MENU[w-1].forEach((d,i)=>{
+    h+=`<div class="card mn-day"><div class="mn-day-t">Día ${i+1}</div>`;
+    d.forEach((x,j)=>{
+      const[n,det]=(MN_R[x]||x).split('|');
+      h+=`<div class="mn-row${j%2?' snack':''}"><div class="mn-l">${MN_L[j]}</div><div><div class="mn-n">${n}</div>${det?`<div class="mn-d">${det}</div>`:''}</div></div>`;
+    });
+    h+='</div>';
+  });
+  return h+`<div class="f12 c-muted" style="line-height:1.6;padding:0 4px 8px">Las colaciones son solo si hay apetito. Porciones por persona, para 2 personas. 3 L de agua al día, sin líquidos junto con la comida (30–60 min antes o después). Máximo 2 tortillas de maíz al día.</div>`;
+}
+function menuCompras(w){
+  const cats=Object.entries(COMPRAS[w-1]),chk=state.menu.chk;
+  let tot=0,ok=0;
+  cats.forEach(([c,s],ci)=>s.split('|').forEach((_,ii)=>{tot++;if(chk[`${w}-${ci}-${ii}`])ok++;}));
+  let h=`<div class="card teal"><div class="flex-between mb8"><span class="f13 fw7 c-main">Semana ${w}</span><span class="f12 c-teal fw7">${ok} de ${tot}</span></div>${bar(tot?ok/tot*100:0)}</div>`;
+  cats.forEach(([c,s],ci)=>{
+    h+=`<div class="card"><div class="f13 fw7 c-teal mb6">${c}</div>`;
+    s.split('|').forEach((it,ii)=>{
+      const k=`${w}-${ci}-${ii}`,d=chk[k];
+      h+=`<div class="mn-item${d?' done':''}" onclick="toggleCompra('${k}')"><div class="check${d?' done':''}"></div><span>${it}</span></div>`;
+    });
+    h+='</div>';
+  });
+  return h+`<button class="btn sm" style="width:100%" onclick="resetCompras(${w})">Desmarcar la semana ${w}</button>`;
+}
+function toggleCompra(k){const c=state.menu.chk;c[k]=!c[k];if(!c[k])delete c[k];save('menu');renderMenu();}
+function resetCompras(w){Object.keys(state.menu.chk).forEach(k=>{if(k.startsWith(w+'-'))delete state.menu.chk[k];});save('menu');renderMenu();}
+
+// ══ MODAL ═══════════════════════════════════════════════════════════════════
+function openModal(){document.getElementById('modal').classList.remove('hidden');}
+function closeModal(){document.getElementById('modal').classList.add('hidden');}
+function selEmoji(btn,hid){btn.closest('.emoji-picker').querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');document.getElementById(hid).value=btn.textContent;}
+
+// ══ FOCUS ═══════════════════════════════════════════════════════════════════
+let focusMins=25,focusSecs=0,focusRunning=false,focusInterval=null,focusTotalSecs=1500;
+function openFocus(){document.getElementById('focus-mode').classList.remove('hidden');renderFocusTime();}
+function closeFocus(){document.getElementById('focus-mode').classList.add('hidden');clearInterval(focusInterval);focusRunning=false;updateFocusBtn();}
+function focusSet(m){clearInterval(focusInterval);focusRunning=false;focusMins=m;focusSecs=0;focusTotalSecs=m*60;renderFocusTime();updateFocusBtn();}
+function focusToggle(){
+  if(focusRunning){clearInterval(focusInterval);focusRunning=false;}
+  else{focusRunning=true;focusInterval=setInterval(()=>{
+    if(focusSecs===0){if(focusMins===0){clearInterval(focusInterval);focusRunning=false;document.getElementById('focus-done').classList.remove('hidden');return;}focusMins--;focusSecs=59;}else focusSecs--;
+    renderFocusTime();updateFocusBtn();
+  },1000);}
+  updateFocusBtn();
+}
+function focusReset(){clearInterval(focusInterval);focusRunning=false;focusMins=25;focusSecs=0;focusTotalSecs=1500;document.getElementById('focus-done').classList.add('hidden');renderFocusTime();updateFocusBtn();}
+function focusAgain(){document.getElementById('focus-done').classList.add('hidden');focusReset();}
+function updateFocusBtn(){const b=document.getElementById('focus-play-btn');if(b)b.textContent=focusRunning?'⏸ Pausar':'▶ Iniciar';}
+function renderFocusTime(){
+  document.getElementById('focus-time').textContent=`${String(focusMins).padStart(2,'0')}:${String(focusSecs).padStart(2,'0')}`;
+  const elapsed=focusTotalSecs-(focusMins*60+focusSecs),pct=focusTotalSecs?elapsed/focusTotalSecs:0;
+  const circ=document.getElementById('focus-circle');
+  if(circ){const r=88,c=2*Math.PI*r,d=pct*c;circ.setAttribute('stroke-dasharray',`${d} ${c}`);}
+}
+
+// ══ ONBOARDING ══════════════════════════════════════════════════════════════
+let obGoals=[],obCurStep=0;
+function obStep(n){
+  if(n===2&&!document.getElementById('ob-name').value.trim())return;
+  document.getElementById('ob-s'+obCurStep).classList.remove('active');
+  obCurStep=n;
+  document.getElementById('ob-s'+n).classList.add('active');
+  [1,2,3].forEach(i=>document.getElementById('ob-b'+i).classList.toggle('active',i<=n));
+}
+function toggleGoal(btn,goal){btn.classList.toggle('sel');obGoals=obGoals.includes(goal)?obGoals.filter(g=>g!==goal):[...obGoals,goal];}
+function obFinish(){
+  const name=document.getElementById('ob-name').value.trim();
+  const vision=document.getElementById('ob-vision').value.trim();
+  if(!vision)return;
+  state.user={name,goals:obGoals,vision};save('user');
+  const ini=[];
+  if(obGoals.includes('Ponerme en forma')){ini.push({id:nid(ini),nombre:'Ejercicio 30 min',identidad:'Soy alguien activo y fuerte',categoria:'Salud',emoji:'🏃',creadoEn:today()});ini.push({id:nid(ini),nombre:'Beber 2L de agua',identidad:'Cuido mi cuerpo cada día',categoria:'Salud',emoji:'💧',creadoEn:today()});}
+  if(obGoals.includes('Aprender algo nuevo'))ini.push({id:nid(ini),nombre:'Leer 20 min',identidad:'Soy alguien que aprende cada día',categoria:'Crecimiento',emoji:'📚',creadoEn:today()});
+  if(obGoals.includes('Reducir el estrés'))ini.push({id:nid(ini),nombre:'Meditación 10 min',identidad:'Cuido mi paz mental',categoria:'Mente',emoji:'🧘',creadoEn:today()});
+  if(obGoals.includes('Mejorar relaciones'))ini.push({id:nid(ini),nombre:'Mensaje a alguien querido',identidad:'Nutro mis vínculos',categoria:'Relaciones',emoji:'❤️',creadoEn:today()});
+  if(obGoals.includes('Mejorar mis finanzas'))ini.push({id:nid(ini),nombre:'Registrar gastos del día',identidad:'Soy consciente con el dinero',categoria:'Dinero',emoji:'💰',creadoEn:today()});
+  if(!ini.length)ini.push({id:1,nombre:'Mi primer hábito',identidad:'Soy alguien que crece cada día',categoria:'Crecimiento',emoji:'🌱',creadoEn:today()});
+  state.habitos=ini;save('habitos');
+  document.getElementById('onboarding').style.display='none';
+  document.getElementById('app').classList.remove('hidden');
+  initApp();
+}
+
+// ══ INIT ════════════════════════════════════════════════════════════════════
+function initApp(){updateHeader();renderInicio();}
+window.onload=()=>{
+  if(state.user){document.getElementById('onboarding').style.display='none';document.getElementById('app').classList.remove('hidden');initApp();}
+};
+// helpers css
+document.head.insertAdjacentHTML('beforeend',`<style>.f18{font-size:18px}.mb20{margin-bottom:20px}.c-red{color:#ef4444}</style>`);
+// ══ SELECTOR PERSONALIZADO ══════════════════════════════════════════════════
+(function(){
+  const chev='<svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>';
+  function close(){const o=document.getElementById('cs-sheet');if(o)o.remove();document.removeEventListener('keydown',esc);}
+  function esc(e){if(e.key==='Escape')close();}
+  function openSheet(sel,sync){
+    close();
+    const bg=document.createElement('div');bg.id='cs-sheet';bg.className='cs-bg';bg.onclick=close;
+    const box=document.createElement('div');box.className='cs-box';box.onclick=e=>e.stopPropagation();
+    const grab=document.createElement('div');grab.className='cs-grab';box.appendChild(grab);
+    const lab=sel.closest('.form-row')&&sel.closest('.form-row').querySelector('.label,.sublabel');
+    if(lab){const t=document.createElement('div');t.className='cs-title';t.textContent=lab.textContent;box.appendChild(t);}
+    const list=document.createElement('div');list.className='cs-list';
+    Array.from(sel.options).forEach((op,i)=>{
+      const r=document.createElement('button');r.type='button';
+      r.className='cs-opt'+(i===sel.selectedIndex?' sel':'');
+      const s=document.createElement('span');s.textContent=op.text;r.appendChild(s);
+      const c=document.createElement('i');r.appendChild(c);
+      r.onclick=()=>{sel.selectedIndex=i;sel.dispatchEvent(new Event('change',{bubbles:true}));sync();close();};
+      list.appendChild(r);
+    });
+    box.appendChild(list);bg.appendChild(box);document.body.appendChild(bg);
+    document.addEventListener('keydown',esc);
+    const cur=list.querySelector('.sel');if(cur)cur.scrollIntoView({block:'center'});
+  }
+  function upgrade(sel){
+    sel.dataset.cs='1';sel.style.display='none';
+    const b=document.createElement('button');b.type='button';b.className='inp cs-btn';
+    const sync=()=>{const o=sel.options[sel.selectedIndex];b.innerHTML='';const s=document.createElement('span');s.textContent=o?o.text:'';b.appendChild(s);b.insertAdjacentHTML('beforeend',chev);};
+    sync();sel.after(b);b.onclick=()=>openSheet(sel,sync);
+  }
+  const run=()=>document.querySelectorAll('select.inp:not([data-cs])').forEach(upgrade);
+  new MutationObserver(run).observe(document.body,{childList:true,subtree:true});run();
+})();
+
+</script>
+  <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');</script>
+</body>
+</html>
