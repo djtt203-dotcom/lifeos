@@ -2,11 +2,17 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"/>
 <title>LifeOS</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
+button{color:inherit;-webkit-appearance:none;appearance:none}
+input,select,textarea{font-size:16px!important}
+.emoji-btn,.humor-btn{color:var(--s9)}
+@media(min-width:768px){#app{max-width:760px}.nav{width:min(560px,calc(100% - 24px))}.sheet{width:min(560px,calc(100% - 24px))}.modal-box,.cs-box{max-width:560px}}
+@media(min-width:1100px){#app{max-width:900px}}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--s9);min-height:100vh}
 input,select,textarea,button{font-family:'Inter',sans-serif}
 input:focus,select:focus,textarea:focus{outline:none;border-color:#86ab5b!important}
@@ -171,7 +177,7 @@ select.inp{appearance:none;cursor:pointer}
 .chart div{flex:1;text-align:center;font-size:10px;color:#b7c9a8;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
 .chart span{display:block;background:#6a9a55;border-radius:8px 8px 4px 4px;margin-bottom:5px;transition:height .6s}
 .chart .best span{background:#b5d98a}
-.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:min(452px,calc(100% - 24px));height:66px;background:var(--card);border-radius:34px;display:flex;align-items:center;justify-content:space-around;box-shadow:0 10px 30px #0a1a0f40;border:1px solid var(--bd);z-index:200}
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(452px,calc(100% - 24px));height:66px;background:var(--card);border-radius:34px;display:flex;align-items:center;justify-content:space-around;box-shadow:0 10px 30px #0a1a0f40;border:1px solid var(--bd);z-index:200}
 .nav button{background:none;border:none;color:var(--s5);width:52px;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:9px;font-weight:700;cursor:pointer;transition:all .35s cubic-bezier(.3,1.6,.5,1);position:relative}
 .nav button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .35s cubic-bezier(.3,1.6,.5,1)}
 .nav button.on{color:var(--s9)}
@@ -181,7 +187,7 @@ select.inp{appearance:none;cursor:pointer}
 .nav .fab svg{width:26px;height:26px;stroke-width:2.4}
 .nav .fab.open svg{transform:rotate(45deg)}
 @keyframes pulse{0%,100%{box-shadow:0 8px 20px #5f8f4566,0 0 0 0 #86ab5b55}50%{box-shadow:0 8px 20px #5f8f4566,0 0 0 10px #86ab5b00}}
-.sheet{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:92px;width:min(452px,calc(100% - 24px));background:var(--card);border:1px solid var(--bd);border-radius:26px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;z-index:190;opacity:0;pointer-events:none;transition:all .25s;box-shadow:0 12px 34px #0a1a0f40}
+.sheet{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(92px + env(safe-area-inset-bottom,0px));width:min(452px,calc(100% - 24px));background:var(--card);border:1px solid var(--bd);border-radius:26px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;z-index:190;opacity:0;pointer-events:none;transition:all .25s;box-shadow:0 12px 34px #0a1a0f40}
 .sheet.show{opacity:1;pointer-events:auto;transform:translateX(-50%)}
 .sheet button{background:var(--bd);border:none;border-radius:16px;padding:14px 8px;color:var(--s9);font-size:12px;font-weight:700;cursor:pointer}
 .sheet button span{display:block;font-size:20px;margin-bottom:4px}
@@ -194,6 +200,7 @@ select.inp{appearance:none;cursor:pointer}
 .frase{background:var(--bd);border-radius:22px;padding:16px 46px 16px 18px;position:relative;margin-bottom:12px}.frase .fi{position:absolute;right:16px;top:14px;font-size:24px;color:#86ab5b}
 .fq{font-size:14px;line-height:1.5;font-weight:600}.fa{font-size:11px;color:#86ab5b;margin-top:6px}
 .seg{display:flex;background:var(--bd);border-radius:16px;padding:3px;gap:2px;margin-bottom:14px}.seg button{flex:1;border:none;background:transparent;color:var(--s5);padding:9px 2px;border-radius:13px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}.seg button.on{background:var(--card);color:var(--s9);box-shadow:0 2px 8px #0002}.seg.sm{width:60%}
+.seg.mov button.on{background:#86ab5b;color:#132318}
 .wv{animation:wv 2.6s linear infinite}@keyframes wv{to{transform:translateX(-60px)}}
 </style>
 <style>
@@ -405,6 +412,7 @@ let state={
   // FINANZAS
   txs: ls('txs',[]),        // transacciones: {id,fecha,tipo,categoria,cuenta,monto,nota}
   deudas: ls('deudas',[]),  // {id,nombre,prestamista,monto,pagado,deadline,tipo}
+  cuentas: ls('cuentas',[]),
   ingresos: ls('ingresos',[]), // {id,fecha,tipo,monto,cuenta,nota}  tipo=sueldo|bono|otro
 };
 function save(k){lsSet(k,state[k]);}
@@ -420,7 +428,6 @@ const EMOJIS_M=['🎯','🏃','📚','💰','❤️','🧠','✈️','💻','�
 const HUMORES=['😣','😔','😐','😊','🤩'];
 
 // ─── FINANZAS CONSTANTES ────────────────────────────────────────────────────
-const CUENTAS=['TDC Nu','TDC Didi','Débito Nu','Débito Bakaool','Mercado Pago Crédito','Banorte','Efectivo'];
 const CATS_TX=['Supermercado/Despensa','Gasolina/Transporte','Entretenimiento/Salidas','Restaurantes/Comida','Suscripciones','Servicios/Hogar','Ropa/Compras','Salud/Farmacia','Pago Préstamo','Otro'];
 const PRESTAMOS=['Nu Préstamo','Didi Préstamo','Nu TDC','Mercado Pago Crédito','Didi TDC'];
 const CAT_TX_COLOR={'Supermercado/Despensa':'#86ab5b','Gasolina/Transporte':'#f59e0b','Entretenimiento/Salidas':'#a3b18a','Restaurantes/Comida':'#d98a7a','Suscripciones':'#6a9a55','Servicios/Hogar':'#6fb3a0','Ropa/Compras':'#f97316','Salud/Farmacia':'#10b981','Pago Préstamo':'#ef4444','Otro':'var(--s5)'};
@@ -645,7 +652,7 @@ function deleteMeta(id){state.metas=state.metas.filter(m=>m.id!==id);save('metas
 // ══ DINERO ══════════════════════════════════════════════════════════════════
 function renderDinero(){
   let html=`<div class="page-title">💳 Finanzas</div>
-  <div class="grid2" style="margin-bottom:8px"><button class="big-btn out" onclick="openNuevaTx()">− Salida<small>Registrar gasto</small></button><button class="big-btn in" onclick="openNuevoIngreso()">+ Entrada<small>Registrar ingreso</small></button></div>
+  <button class="btn sm" onclick="openCuentas()" style="margin-bottom:8px">💳 Mis cuentas</button>
   <button class="btn scan-btn" onclick="abrirTicket()" style="margin-bottom:14px">📷 Escanear ticket</button>
   <div class="seg">${[['resumen','Resumen'],['periodo','Periodo'],['compromisos','Deudas y pagos'],['ingresos','Ingresos']].map(([k,l])=>`<button class="${finTab===k?'on':''}" onclick="setFinTab('${k}')">${l}</button>`).join('')}</div>`;
   if(finTab==='resumen') html+=renderFinResumen();
@@ -674,7 +681,7 @@ function renderFinResumen(){
 
   // por cuenta
   const porCuenta={};
-  txsMes.forEach(t=>{porCuenta[t.cuenta]=(porCuenta[t.cuenta]||0)+t.monto;});
+  txsMes.forEach(t=>{const c=t.cuenta||'Sin cuenta';porCuenta[c]=(porCuenta[c]||0)+t.monto;});
 
   let html=`
   <div class="grid2">
@@ -785,8 +792,7 @@ function renderFinSemana(){
     </div>`;
   });
   html+=`</div>
-  <button class="btn" onclick="openNuevaTx()" style="padding:12px;font-size:13px;border-radius:12px;margin-bottom:8px">+ Gasto</button>
-  <button class="btn purple" onclick="openNuevoIngreso()" style="padding:11px;font-size:13px;border-radius:12px">+ Ingreso</button>`;
+  <button class="btn" onclick="openNuevaTx()" style="padding:12px;font-size:13px;border-radius:12px">+ Registrar movimiento</button>`;
   return html;
 }
 
@@ -947,20 +953,39 @@ function renderFinIngresos(){
       <div><div class="tx-amount ingreso">+${fmt(i.monto)}</div><button class="del-btn" onclick="deleteIngreso(${i.id})" style="float:right">×</button></div>
     </div>`).join('')}
   </div>
-  <button class="btn" onclick="openNuevoIngreso()" style="padding:13px;font-size:14px;border-radius:12px">+ Registrar ingreso</button>`;
+  <button class="btn" onclick="openNuevaTx()" style="padding:13px;font-size:14px;border-radius:12px">+ Registrar movimiento</button>`;
   return html;
 }
+
+// ─── CUENTAS PERSONALIZADAS ─────────────────────────────────────────────────
+function cuentasOpts(){
+  if(!state.cuentas.length)return '<option value="">Sin cuenta (agrégalas en Finanzas › Mis cuentas)</option>';
+  return state.cuentas.map(c=>`<option>${escH(c)}</option>`).join('');
+}
+function openCuentas(){
+  document.getElementById('modal-title').textContent='Mis cuentas';
+  const lista=state.cuentas.length?state.cuentas.map((c,i)=>`<div class="flex gap6 mb8" style="align-items:center"><input class="inp" value="${escH(c).replace(/"/g,'&quot;')}" onchange="renameCuenta(${i},this.value)"/><button class="btn sm" style="width:auto;padding:9px 12px" onclick="delCuenta(${i})" aria-label="Quitar">🗑</button></div>`).join(''):'<div class="f13 c-muted mb10">Aún no tienes cuentas. Agrega la primera.</div>';
+  document.getElementById('modal-body').innerHTML=`${lista}
+    <div class="flex gap6" style="align-items:center;margin-top:6px"><input class="inp" id="cta-new" placeholder="Ej: Tarjeta azul, Efectivo, Ahorros…" onkeydown="if(event.key==='Enter')addCuenta()"/><button class="btn sm" style="width:auto;padding:9px 14px" onclick="addCuenta()">＋</button></div>`;
+  openModal();
+}
+function addCuenta(){const v=document.getElementById('cta-new').value.trim();if(!v)return;if(!state.cuentas.includes(v)){state.cuentas.push(v);save('cuentas');}openCuentas();}
+function renameCuenta(i,v){v=v.trim();const old=state.cuentas[i];if(!v||v===old)return openCuentas();state.cuentas[i]=v;save('cuentas');
+  state.txs.forEach(t=>{if(t.cuenta===old)t.cuenta=v;});state.ingresos.forEach(t=>{if(t.cuenta===old)t.cuenta=v;});save('txs');save('ingresos');renderDinero();openCuentas();}
+function delCuenta(i){if(!confirm('¿Quitar esta cuenta? Los movimientos ya registrados se conservan.'))return;state.cuentas.splice(i,1);save('cuentas');openCuentas();}
+function movToggle(t){return `<div class="seg mov"><button class="${t==='gasto'?'on':''}" onclick="openNuevaTx()">− Salida</button><button class="${t==='ingreso'?'on':''}" onclick="openNuevoIngreso()">+ Entrada</button></div>`;}
 
 // ─── MODALES TRANSACCIONES ────────────────────────────────────────────────────
 function openNuevaTx(){
   finTipo='gasto';
-  document.getElementById('modal-title').textContent='Registrar gasto';
+  document.getElementById('modal-title').textContent='Registrar movimiento';
   document.getElementById('modal-body').innerHTML=`
+    ${movToggle('gasto')}
     ${scanBlock()}
     <div class="form-row"><div class="sublabel">Categoría</div>
       <select class="inp" id="tx-cat">${CATS_TX.map(c=>`<option>${c}</option>`).join('')}</select></div>
     <div class="form-row"><div class="sublabel">Tarjeta / Cuenta</div>
-      <select class="inp" id="tx-cuenta">${CUENTAS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <select class="inp" id="tx-cuenta">${cuentasOpts()}</select></div>
     <div class="form-row"><div class="sublabel">Monto *</div><input type="number" class="inp" id="tx-monto" placeholder="0.00"/></div>
     <div class="form-row"><div class="sublabel">Nota</div><input class="inp" id="tx-nota" placeholder="Ej: Súper del sábado, gasolina..."/></div>
     <div class="form-row"><div class="sublabel">Fecha</div><input type="date" class="inp" id="tx-fecha" value="${today()}"/></div>
@@ -977,14 +1002,15 @@ function saveTx(){
 function deleteTx(id){state.txs=state.txs.filter(t=>t.id!==id);save('txs');renderDinero();}
 
 function openNuevoIngreso(){
-  document.getElementById('modal-title').textContent='Registrar ingreso';
+  document.getElementById('modal-title').textContent='Registrar movimiento';
   document.getElementById('modal-body').innerHTML=`
+    ${movToggle('ingreso')}
     <div class="form-row"><div class="sublabel">Tipo de ingreso</div>
       <select class="inp" id="ing-tipo">
         <option>Sueldo</option><option>Bono</option><option>Freelance</option><option>Venta</option><option>Otro</option>
       </select></div>
     <div class="form-row"><div class="sublabel">Cuenta donde entra</div>
-      <select class="inp" id="ing-cuenta">${CUENTAS.map(c=>`<option>${c}</option>`).join('')}</select></div>
+      <select class="inp" id="ing-cuenta">${cuentasOpts()}</select></div>
     <div class="form-row"><div class="sublabel">Monto *</div><input type="number" class="inp" id="ing-monto" placeholder="0.00"/></div>
     <div class="form-row"><div class="sublabel">Nota</div><input class="inp" id="ing-nota" placeholder="Ej: Quincena, bono fin de año..."/></div>
     <div class="form-row"><div class="sublabel">Fecha</div><input type="date" class="inp" id="ing-fecha" value="${today()}"/></div>
@@ -1169,9 +1195,9 @@ function presupCard(){
 }
 function setPresup(i,v){const c=CATS_TX[i],n=parseFloat(v);if(n>0)state.presup[c]=n;else delete state.presup[c];save('presup');renderDinero();}
 function registrarCompra(w){
-  const v=prompt('¿Cuánto gastaste en las compras de la semana '+w+'? (se registra en Supermercado/Despensa, cuenta Efectivo)');
+  const v=prompt('¿Cuánto gastaste en las compras de la semana '+w+'? (se registra en Supermercado/Despensa)');
   const monto=parseFloat(v);if(!monto||monto<=0)return;
-  state.txs.push({id:nid(state.txs),tipo:'gasto',categoria:'Supermercado/Despensa',cuenta:'Efectivo',monto,nota:'Compras semana '+w,fecha:today()});
+  state.txs.push({id:nid(state.txs),tipo:'gasto',categoria:'Supermercado/Despensa',cuenta:(state.cuentas[0]||''),monto,nota:'Compras semana '+w,fecha:today()});
   save('txs');alert('Gasto de '+fmt(monto)+' registrado en Dinero.');
 }
 
@@ -1239,17 +1265,18 @@ function openEvento(id,fecha,tipo){
   document.getElementById('modal-title').textContent=e?'Editar':'Nuevo en la agenda';
   document.getElementById('modal-body').innerHTML=`
     <div class="form-row"><div class="sublabel">Título *</div><input class="inp" id="ev-titulo" value="${e?escH(e.titulo).replace(/"/g,'&quot;'):''}" placeholder="Ej: Netflix, renta, cita dentista"/></div>
-    <div class="form-row"><div class="sublabel">Tipo</div><select class="inp" id="ev-tipo">${Object.entries(EV_T).map(([k,v])=>`<option value="${k}"${tp===k?' selected':''}>${v[0]} ${v[2]}</option>`).join('')}</select></div>
-    <div class="form-row"><div class="sublabel">Monto (opcional)</div><input type="number" inputmode="decimal" class="inp" id="ev-monto" value="${e&&e.monto?e.monto:''}" placeholder="0.00"/></div>
+    <div class="form-row"><div class="sublabel">Tipo</div><select class="inp" id="ev-tipo" onchange="evToggleMonto()">${Object.entries(EV_T).map(([k,v])=>`<option value="${k}"${tp===k?' selected':''}>${v[0]} ${v[2]}</option>`).join('')}</select></div>
+    <div class="form-row" id="ev-monto-row"${tp==='evento'?' style="display:none"':''}><div class="sublabel">Monto (opcional)</div><input type="number" inputmode="decimal" class="inp" id="ev-monto" value="${e&&e.monto?e.monto:''}" placeholder="0.00"/></div>
     <div class="form-row"><div class="sublabel">Fecha *</div><input type="date" class="inp" id="ev-fecha" value="${e?e.fecha:(fecha||today())}"/></div>
     <div class="form-row"><div class="sublabel">Se repite</div><select class="inp" id="ev-rep">${Object.entries(REPL).map(([k,v])=>`<option value="${k}"${rp===k?' selected':''}>${v}</option>`).join('')}</select></div>
     <div class="modal-actions"><button class="btn" onclick="saveEvento(${id||0})" style="padding:11px">Guardar</button>${e?`<button class="btn danger" onclick="deleteEvento(${id})">Eliminar</button>`:''}</div>`;
   openModal();
 }
+function evToggleMonto(){const r=document.getElementById('ev-monto-row');if(r)r.style.display=document.getElementById('ev-tipo').value==='evento'?'none':'';}
 function saveEvento(id){
   const titulo=document.getElementById('ev-titulo').value.trim(),fecha=document.getElementById('ev-fecha').value;
   if(!titulo||!fecha)return;
-  const d={titulo,tipo:document.getElementById('ev-tipo').value,monto:parseFloat(document.getElementById('ev-monto').value)||0,fecha,repite:document.getElementById('ev-rep').value};
+  const d={titulo,tipo:document.getElementById('ev-tipo').value,monto:document.getElementById('ev-tipo').value==='evento'?0:(parseFloat(document.getElementById('ev-monto').value)||0),fecha,repite:document.getElementById('ev-rep').value};
   if(id){Object.assign(state.eventos.find(x=>x.id===id),d);}else{state.eventos.push({id:nid(state.eventos),pag:{},...d});}
   save('eventos');closeModal();calSel=fecha;renderTab(curTab);
 }
@@ -1399,8 +1426,8 @@ function goTab(t){closeSheet();showTab(t,document.querySelectorAll('.tabs-bar .t
 const _st=showTab;showTab=function(t,b){_st(t,b);document.querySelectorAll('#nav button[data-t]').forEach(x=>x.classList.toggle('on',x.dataset.t===t||(x.dataset.t==='mas'&&['metas','diario','menu','agenda'].includes(t))));};
 function closeSheet(){document.getElementById('sheet').classList.remove('show');document.getElementById('fab').classList.remove('open');}
 function toggleSheet(k){const sh=document.getElementById('sheet');const open=sh.classList.contains('show');closeSheet();if(open)return;
- const items=[['💵','Registrar ingreso',"openNuevoIngreso()"],['💸','Registrar egreso',"openNuevaTx()"],['📝','Nota rápida',"quickNota()"]];
- sh.style.gridTemplateColumns='repeat(3,1fr)';sh.innerHTML=items.map(([e,t,f])=>`<button onclick="closeSheet();${f}"><span>${e}</span>${t}</button>`).join('');sh.classList.add('show');document.getElementById('fab').classList.add('open');}
+ const items=[['💸','Registrar movimiento',"openNuevaTx()"],['📝','Nota rápida',"quickNota()"]];
+ sh.style.gridTemplateColumns='repeat(2,1fr)';sh.innerHTML=items.map(([e,t,f])=>`<button onclick="closeSheet();${f}"><span>${e}</span>${t}</button>`).join('');sh.classList.add('show');document.getElementById('fab').classList.add('open');}
 function quickNota(){document.getElementById('modal-title').textContent='Nota rápida';document.getElementById('modal-body').innerHTML=`<textarea class="inp" id="qn" rows="5" placeholder="Escribe tu idea o pendiente..."></textarea><div class="modal-actions"><button class="btn" onclick="saveQN()" style="padding:11px">Guardar nota</button></div>`;openModal();setTimeout(()=>document.getElementById('qn')&&document.getElementById('qn').focus(),60);}
 function saveQN(){const t=document.getElementById('qn').value.trim();if(!t)return;state.notas.push({id:nid(state.notas),txt:t,fecha:today(),pin:0});save('notas');closeModal();if(curTab==='midia'&&diaTab==='notas')renderNotas();}
 let diaTab='habitos',saludTab='agua';
@@ -1487,6 +1514,7 @@ function selEmoji(btn,hid){btn.closest('.emoji-picker').querySelectorAll('.emoji
 let _busy=false;new MutationObserver(()=>{if(_busy)return;_busy=true;requestAnimationFrame(()=>{iconize(document.body);_busy=false;});}).observe(document.body,{childList:true,subtree:true,characterData:true});
 iconize(document.body);
 document.querySelector('#nav [data-t=inicio]').classList.add('on');
+document.addEventListener('gesturestart',e=>e.preventDefault());
 </script>
 </body>
 </html>
