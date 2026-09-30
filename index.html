@@ -404,7 +404,7 @@ let state={
   metas: ls('metas',[]),
   comp: ls('comp',{}),
   diario: ls('diario',[]),
-  menu: ls('menu',{sem:1,vista:'menu',chk:{}}),
+  menu: (v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{sem:1,vista:'menu',chk:{}})(ls('menu',null)),
   agua: ls('agua',{}),
   presup: ls('presup',{}),
   hist: ls('hist',{}),
@@ -429,7 +429,6 @@ const HUMORES=['😣','😔','😐','😊','🤩'];
 
 // ─── FINANZAS CONSTANTES ────────────────────────────────────────────────────
 const CATS_TX=['Supermercado/Despensa','Gasolina/Transporte','Entretenimiento/Salidas','Restaurantes/Comida','Suscripciones','Servicios/Hogar','Ropa/Compras','Salud/Farmacia','Pago Préstamo','Otro'];
-const PRESTAMOS=['Nu Préstamo','Didi Préstamo','Nu TDC','Mercado Pago Crédito','Didi TDC'];
 const CAT_TX_COLOR={'Supermercado/Despensa':'#86ab5b','Gasolina/Transporte':'#f59e0b','Entretenimiento/Salidas':'#a3b18a','Restaurantes/Comida':'#d98a7a','Suscripciones':'#6a9a55','Servicios/Hogar':'#6fb3a0','Ropa/Compras':'#f97316','Salud/Farmacia':'#10b981','Pago Préstamo':'#ef4444','Otro':'var(--s5)'};
 const CAT_TX_EMO={'Supermercado/Despensa':'🛒','Gasolina/Transporte':'⛽','Entretenimiento/Salidas':'🎉','Restaurantes/Comida':'🍽️','Suscripciones':'📱','Servicios/Hogar':'🏠','Ropa/Compras':'👕','Salud/Farmacia':'💊','Pago Préstamo':'💸','Otro':'📦'};
 
@@ -898,12 +897,8 @@ function openDeudaModal(d){
   const isNew=!d;
   document.getElementById('modal-title').textContent=isNew?'Nueva deuda / préstamo':'Editar deuda';
   document.getElementById('modal-body').innerHTML=`
-    <div class="form-row"><div class="sublabel">Nombre *</div><input class="inp" id="d-nombre" value="${d?.nombre||''}" placeholder="Ej: Nu TDC, Didi Préstamo..."/></div>
-    <div class="form-row"><div class="sublabel">Acreedor / prestamista</div>
-      <select class="inp" id="d-prestamista">
-        ${PRESTAMOS.map(p=>`<option${p===(d?.prestamista||'')?' selected':''}>${p}</option>`).join('')}
-        <option value="Otro">Otro</option>
-      </select></div>
+    <div class="form-row"><div class="sublabel">Nombre *</div><input class="inp" id="d-nombre" value="${escH(d?.nombre||'').replace(/"/g,'&quot;')}" placeholder="Ej: Préstamo del coche, tarjeta azul…"/></div>
+    <div class="form-row"><div class="sublabel">Acreedor / a quién le debes</div><input class="inp" id="d-prestamista" list="d-acreedores" value="${escH(d?.prestamista||'').replace(/"/g,'&quot;')}" placeholder="Escribe el que quieras"/><datalist id="d-acreedores">${[...new Set([...state.deudas.map(x=>x.prestamista),...state.cuentas].filter(Boolean))].map(x=>`<option value="${escH(x).replace(/"/g,'&quot;')}">`).join('')}</datalist></div>
     <div class="form-row2">
       <div><div class="sublabel">Monto total *</div><input type="number" class="inp" id="d-monto" value="${d?.monto||''}" placeholder="0"/></div>
       <div><div class="sublabel">Ya pagado</div><input type="number" class="inp" id="d-pagado" value="${d?.pagado||0}" placeholder="0"/></div>
@@ -919,7 +914,7 @@ function saveDeuda(id){
   const nombre=document.getElementById('d-nombre').value.trim();
   const monto=parseFloat(document.getElementById('d-monto').value);
   if(!nombre||!monto)return;
-  const data={nombre,prestamista:document.getElementById('d-prestamista').value,monto,pagado:parseFloat(document.getElementById('d-pagado').value)||0,deadline:document.getElementById('d-deadline').value.trim()};
+  const data={nombre,prestamista:document.getElementById('d-prestamista').value.trim(),monto,pagado:parseFloat(document.getElementById('d-pagado').value)||0,deadline:document.getElementById('d-deadline').value.trim()};
   if(id===null)state.deudas.push({id:nid(state.deudas),...data});
   else state.deudas=state.deudas.map(d=>d.id===id?{...d,...data}:d);
   save('deudas');closeModal();renderDinero();
@@ -1028,7 +1023,7 @@ function deleteIngreso(id){state.ingresos=state.ingresos.filter(i=>i.id!==id);sa
 
 // ══ DIARIO ══════════════════════════════════════════════════════════════════
 let expandedEntry=null,diarioHumor=3,diarioFoto=null,diarioDraft='';
-function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function escH(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function keepDraft(){const t=document.getElementById('diario-txt');if(t)diarioDraft=t.value;}
 function renderDiario(){
   const{diario}=state;
@@ -1119,7 +1114,21 @@ const COMPRAS=[
 {'Proteínas':'Pescado blanco (mero/tilapia/mojarra, ~1.2 kg)|Camarón crudo mediano (~2 kg)|Carne molida (240 g)|Bistec bola (300 g)|Huevo (12 pzas)','Lácteos':'Queso oaxaca|Requesón|Yogur natural 0%|Yogur griego','Frutas':'Plátano|Mango|Ciruela|Guayaba|Granada china|Toronja|Tuna|Mandarina|Cerezas|Melón','Verduras':'Calabacita|Jitomate|Aceituna verde|Apio|Pepino|Zanahoria|Papa|Cebolla|Jalapeño|Cilantro|Espinacas|Chile verde|Champiñones|Lechuga','Cereales':'Tostadas horneadas/deshidratadas|Arroz cocido','Grasas':'Aceite de oliva|Mantequilla|Aceite en aerosol','Otros':'Chile chipotle adobado|Crema light|Jengibre|Perejil|Ajo|Limón'}];
 const SNK=/colaci|snack|merienda|media/i;
 let _dp;
-function plan(){const m=state.menu;if(m.plan)return m.plan;
+function planFix(p){
+  if(!p||typeof p!=='object'||!Array.isArray(p.sem))return null;
+  let lab=Array.isArray(p.labels)?p.labels.map(x=>String(x==null?'':x)):[];
+  if(!lab.length){const n=Math.max(0,...p.sem.map(w=>Array.isArray(w)?Math.max(0,...w.map(d=>d&&Array.isArray(d.c)?d.c.length:0)):0));if(!n)return null;lab=MN_L.slice(0,n);while(lab.length<n)lab.push('Comida');}
+  p.labels=lab;
+  p.sem=p.sem.filter(Array.isArray).map(w=>w.filter(d=>d&&typeof d==='object').map((d,i)=>{
+    const c=Array.isArray(d.c)?d.c:[];
+    return{t:String(d.t==null?'Día '+(i+1):d.t),c:lab.map((_,j)=>{const x=c[j];
+      if(x&&typeof x==='object')return{n:String(x.n==null?'':x.n),det:String(x.det==null?'':x.det)};
+      if(typeof x==='string'){const[n,det]=(MN_R[x]||x).split('|');return{n,det:det||''};}
+      return{n:'',det:''};})};}));
+  return p;
+}
+function plan(){const m=state.menu;
+  if(m.plan){const f=planFix(m.plan);if(f){m.plan=f;return f;}delete m.plan;}
   return _dp||(_dp={nombre:'Plan de ejemplo',labels:MN_L.slice(),nota:'Las colaciones son solo si hay apetito. Porciones por persona, para 2 personas. 3 L de agua al día, sin líquidos junto con la comida (30–60 min antes o después). Máximo 2 tortillas de maíz al día.',
     sem:MENU.map(w=>w.map((d,i)=>({t:'Día '+(i+1),c:d.map(x=>{const[n,det]=(MN_R[x]||x).split('|');return{n,det:det||''};})})))});}
 function plEdit(){const m=state.menu;if(!m.plan){m.plan=JSON.parse(JSON.stringify(plan()));m.plan.base='def';}return m.plan;}
@@ -1134,10 +1143,10 @@ function renderMenu(){
 function menuSet(k,v){state.menu[k]=v;save('menu');renderMenu();}
 function menuDias(w){
   const P=plan(),ds=P.sem[w-1]||[];
-  let h=`<div class="card mb12"><div class="label mb8">${escH(P.nombre||'Mi plan')}</div><button class="btn" style="width:100%;margin-bottom:8px" onclick="openSubirPlan()">📷 Subir mi plan (foto o PDF)</button><div class="flex gap8"><button class="btn sm" style="flex:1" onclick="menuAddDia(${w})">＋ Día</button><button class="btn sm" style="flex:1" onclick="menuAddSem()">＋ Semana</button><button class="btn sm" style="flex:1" onclick="planBlanco()">✏️ En blanco</button></div>${state.menu.plan?`<button class="btn sm" style="width:100%;margin-top:8px" onclick="planEjemplo()">Volver al plan de ejemplo</button>`:''}</div>`;
+  let h=`<div class="card mb12"><div class="label mb8">${escH(P.nombre||'Mi plan')}</div><button class="btn" style="width:100%;margin-bottom:8px" onclick="openSubirPlan()">📷 Subir mi plan (foto o PDF)</button><div class="flex gap8"><button class="btn sm" style="flex:1" onclick="menuAddDia(${w})">＋ Día</button><button class="btn sm" style="flex:1" onclick="menuAddSem()">＋ Semana</button><button class="btn sm" style="flex:1" onclick="openArmarPlan()">✏️ Armar paso a paso</button></div>${state.menu.plan?`<button class="btn sm" style="width:100%;margin-top:8px" onclick="planEjemplo()">Volver al plan de ejemplo</button>`:''}</div>`;
   if(!ds.length)h+='<div class="card"><div class="f13 c-muted">Esta semana no tiene días. Usa ＋ Día.</div></div>';
   ds.forEach((d,i)=>{
-    h+=`<div class="card mn-day"><div class="flex-between"><div class="mn-day-t">${escH(d.t)}</div><button class="del-btn" onclick="menuDelDia(${w},${i})" aria-label="Quitar día">🗑</button></div>`;
+    h+=`<div class="card mn-day"><div class="flex-between"><div class="mn-day-t" onclick="renameDia(${w},${i})" style="cursor:pointer">${escH(d.t)}</div><button class="del-btn" onclick="menuDelDia(${w},${i})" aria-label="Quitar día">🗑</button></div>`;
     d.c.forEach((x,j)=>{
       const lb=P.labels[j]||'Comida';
       h+=`<div class="mn-row${SNK.test(lb)?' snack':''}" onclick="editComida(${w},${i},${j})" style="cursor:pointer"><div class="mn-l">${escH(lb)}</div><div style="flex:1;min-width:0"><div class="mn-n">${escH(x.n)||'<span class="c-muted">Toca para agregar</span>'}</div>${x.det?`<div class="mn-d">${escH(x.det)}</div>`:''}</div><span class="c-muted" style="font-size:12px">✎</span></div>`;
@@ -1154,7 +1163,8 @@ function editComida(w,i,j){
   document.getElementById('modal-body').innerHTML=`<div class="form-row"><div class="sublabel">Cambiar por una receta guardada</div><select class="inp" onchange="pickReceta(this.value)"><option value="">Elegir…</option>${window._rc.map((r,k)=>`<option value="${k}">${escH(r.n)}</option>`).join('')}</select></div>
     <div class="form-row"><div class="sublabel">Nombre</div><input class="inp" id="mc-n" value="${escH(x.n).replace(/"/g,'&quot;')}" placeholder="Ej: Pollo a la plancha"/></div>
     <div class="form-row"><div class="sublabel">Detalle / ingredientes</div><textarea class="inp" id="mc-d" rows="3">${escH(x.det)}</textarea></div>
-    <div class="modal-actions"><button class="btn" onclick="saveComida(${w},${i},${j})" style="padding:11px">Guardar</button></div>`;
+    <div class="modal-actions"><button class="btn" onclick="saveComida(${w},${i},${j})" style="padding:11px">Guardar</button></div>
+    <button class="btn sm" style="width:100%;margin-top:8px" onclick="copiaComida(${w},${i},${j})">Copiar a todos los días de la semana</button>`;
   openModal();
 }
 function pickReceta(k){const r=(window._rc||[])[k];if(!r)return;document.getElementById('mc-n').value=r.n;document.getElementById('mc-d').value=r.det;}
@@ -1163,13 +1173,29 @@ function menuAddDia(w){const P=plEdit(),ds=P.sem[w-1];ds.push({t:'Día '+(ds.len
 function menuDelDia(w,i){if(confirm('¿Quitar este día?')){plEdit().sem[w-1].splice(i,1);saveMenu();}}
 function menuAddSem(){const P=plEdit();P.sem.push([]);state.menu.sem=P.sem.length;saveMenu();}
 function nuevoPlan(p){const m=state.menu;if(m.plan&&!confirm('Esto reemplaza tu plan actual. ¿Continuar?'))return false;m.plan=p;m.lstC={};m.sem=1;m.hoy={sem:1,dia:1};save('menu');return true;}
-function planBlanco(){const lab=['Desayuno','Colación 1','Comida','Colación 2','Cena'];
-  if(nuevoPlan({nombre:'Mi plan',labels:lab,nota:'',sem:[['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(t=>({t,c:lab.map(()=>({n:'',det:''}))}))]}))renderMenu();}
+function openArmarPlan(){
+  document.getElementById('modal-title').textContent='Armar mi plan';
+  document.getElementById('modal-body').innerHTML=`<div class="form-row2"><div><div class="sublabel">Semanas</div><input type="number" inputmode="numeric" class="inp" id="ap-s" value="1" min="1" max="8"/></div><div><div class="sublabel">Días por semana</div><input type="number" inputmode="numeric" class="inp" id="ap-d" value="7" min="1" max="7"/></div></div>
+    <div class="form-row"><div class="sublabel">Comidas del día (una por línea)</div><textarea class="inp" id="ap-c" rows="5">Desayuno\nColación 1\nComida\nColación 2\nCena</textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="armarPlan()" style="padding:11px">Crear y llenar</button></div>`;
+  openModal();
+}
+function armarPlan(){
+  const S=Math.max(1,Math.min(8,+document.getElementById('ap-s').value||1)),D=Math.max(1,Math.min(7,+document.getElementById('ap-d').value||7)),
+    lab=document.getElementById('ap-c').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(!lab.length){alert('Escribe al menos una comida.');return;}
+  const sem=Array.from({length:S},()=>Array.from({length:D},(_,i)=>({t:'Día '+(i+1),c:lab.map(()=>({n:'',det:''}))})));
+  if(nuevoPlan({nombre:'Mi plan',labels:lab,nota:'',sem})){closeModal();renderMenu();}
+}
+function renameDia(w,i){const d=plEdit().sem[w-1][i],t=prompt('Nombre del día',d.t);if(t&&t.trim()){d.t=t.trim();saveMenu();}}
+function copiaComida(w,i,j){const P=plEdit(),n=document.getElementById('mc-n').value.trim(),det=document.getElementById('mc-d').value.trim();P.sem[w-1].forEach(d=>{if(d.c[j])d.c[j]={n,det};});closeModal();saveMenu();}
 function planEjemplo(){if(!confirm('Volver al plan de ejemplo. Se pierden los cambios de tu plan. ¿Continuar?'))return;delete state.menu.plan;state.menu.sem=1;state.menu.hoy={sem:1,dia:1};saveMenu();}
 function lk(){const p=state.menu.plan;return p&&!p.base?'lstC':'lst';}
 function lista(w){
-  const m=state.menu,k=lk();m[k]=m[k]||{};
+  const m=state.menu,k=lk();if(!m[k]||typeof m[k]!=='object'||Array.isArray(m[k]))m[k]={};
   if(!m[k][w])m[k][w]=k==='lst'?Object.entries(COMPRAS[w-1]||{}).map(([c,t])=>({c,items:t.split('|').map(x=>({t:x,ok:false}))})):[];
+  if(!Array.isArray(m[k][w]))m[k][w]=[];
+  m[k][w]=m[k][w].filter(g=>g&&Array.isArray(g.items));
   return m[k][w];
 }
 function menuCompras(w){
@@ -1355,20 +1381,46 @@ function loadPdfJs(){
   const B='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
   return new Promise((ok,no)=>{const x=document.createElement('script');x.src=B+'pdf.min.js';x.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=B+'pdf.worker.min.js';ok();};x.onerror=no;document.head.appendChild(x);});
 }
+function filas(its){
+  const H=its.map(i=>i.h).sort((a,b)=>a-b)[its.length>>1]||10,rows=[];
+  its.sort((a,b)=>b.y-a.y);
+  its.forEach(it=>{const r=rows[rows.length-1];if(r&&Math.abs(r.y-it.y)<H*.6)r.it.push(it);else rows.push({y:it.y,it:[it]});});
+  return rows.map(r=>{const cs=[];r.it.sort((a,b)=>a.x-b.x).forEach(i=>{const c=cs[cs.length-1];if(c&&i.x-c.x2<H*1.8){c.s+=' '+i.s;c.x2=i.x2;}else cs.push({s:i.s,x:i.x,x2:i.x2});});return cs;});
+}
+function filasTexto(rows){
+  const D=/^(d[ií]a\s*\d+|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b/i,M=/^(desayuno|colaci|almuerzo|comida|merienda|snack|cena|media)/i,W=/^semana\s*\d+/i;
+  const out=[];let mode=0,cols=[],blk=[],cur=null,lab='',tb=0;
+  const flush=()=>{blk.forEach(b=>{out.push(b.t);b.m.forEach(x=>{if(x.s)out.push(x.l+': '+x.s);});});mode=0;cols=[];blk=[];cur=null;};
+  const ci=c=>{const x=(c.x+c.x2)/2;let k=0;for(let i=1;i<cols.length;i++)if(x>(cols[i-1].x+cols[i].x)/2)k=i;return k;};
+  rows.forEach(cs=>{
+    const dh=cs.filter(c=>D.test(c.s)),mh=cs.filter(c=>M.test(c.s));
+    if(cs.length===1&&W.test(cs[0].s)){flush();out.push(cs[0].s);return;}
+    if(dh.length>=2||mh.length>=2){flush();tb=1;mode=dh.length>=2?1:2;cols=(mode===1?dh:mh).map(c=>({x:(c.x+c.x2)/2,t:c.s.trim()}));if(mode===1)blk=cols.map(c=>({t:c.t,m:[]}));return;}
+    if(!mode){out.push(cs.map(c=>c.s).join(' '));return;}
+    const f=cs[0],key=(mode===1?M.test(f.s):D.test(f.s))&&f.x2<cols[0].x,rest=key?cs.slice(1):cs;
+    if(key){if(mode===1)lab=f.s.trim();else{cur={t:f.s.trim(),m:cols.map(c=>({l:c.t,s:''}))};blk.push(cur);}}
+    rest.forEach(c=>{const k=ci(c);
+      if(mode===1){const m=blk[k].m;if(key)m.push({l:lab,s:c.s});else if(m.length)m[m.length-1].s+=' '+c.s;}
+      else if(cur)cur.m[k].s+=(cur.m[k].s?' ':'')+c.s;});
+  });
+  flush();return{txt:out.join('\n'),tabla:tb};
+}
+async function ocrImg(src){
+  await loadOcr();const d=(await Tesseract.recognize(src,'spa')).data,w=(d.words||[]).filter(x=>x.text.trim());
+  if(w.length>15){const r=filasTexto(filas(w.map(x=>({s:x.text,x:x.bbox.x0,x2:x.bbox.x1,y:-(x.bbox.y0+x.bbox.y1)/2,h:x.bbox.y1-x.bbox.y0}))));if(r.tabla)return r.txt;}
+  return d.text;
+}
+async function leerImg(f,st){st.textContent='Leyendo imagen…';return ocrImg(await ticketImg(f));}
 async function leerPdf(f,st){
   st.textContent='Abriendo PDF…';await loadPdfJs();
   const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,N=Math.min(pdf.numPages,8);let out='';
   for(let p=1;p<=N;p++){
     st.textContent='Leyendo PDF… página '+p+' de '+N;
-    const pg=await pdf.getPage(p),tc=await pg.getTextContent(),rows={};
-    tc.items.forEach(it=>{const y=Math.round(it.transform[5]/4);(rows[y]=rows[y]||[]).push(it);});
-    let t=Object.keys(rows).map(Number).sort((a,b)=>b-a).map(y=>rows[y].sort((a,b)=>a.transform[4]-b.transform[4]).map(i=>i.str).join(' ')).join('\n');
-    if(t.replace(/\s/g,'').length<40){
-      await loadOcr();const vp=pg.getViewport({scale:2}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
-      await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
-      t=(await Tesseract.recognize(c,'spa')).data.text;
-    }
-    out+=t+'\n';
+    const pg=await pdf.getPage(p),tc=await pg.getTextContent(),
+      its=tc.items.filter(i=>i.str.trim()).map(i=>({s:i.str,x:i.transform[4],x2:i.transform[4]+i.width,y:i.transform[5],h:i.height||10}));
+    if(its.length>15){out+=filasTexto(filas(its)).txt+'\n';continue;}
+    const vp=pg.getViewport({scale:2}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+    await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;out+=(await ocrImg(c))+'\n';
   }
   return out;
 }
@@ -1378,7 +1430,7 @@ async function leerPlan(inp){
   try{
     for(const f of fs){
       if(f.type==='application/pdf'||/\.pdf$/i.test(f.name))out+=await leerPdf(f,st)+'\n';
-      else{st.textContent='Preparando lector…';await loadOcr();st.textContent='Leyendo imagen…';out+=(await Tesseract.recognize(await ticketImg(f),'spa')).data.text+'\n';}
+      else out+=(await leerImg(f,st))+'\n';
     }
     ta.value=out.trim();planCount();
     st.textContent='Listo. Revisa el texto: corrige lo que se leyó mal y usa líneas como "Día 1" y "Desayuno: …".';
@@ -1392,7 +1444,7 @@ function parsePlan(txt){
   txt.split('\n').map(l=>l.replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/,'').trim()).filter(Boolean).forEach(l=>{
     let m;
     if(WR.test(l)){sem.push([]);d=c=null;return;}
-    if(m=l.match(DR)){if(!sem.length)sem.push([]);d={t:cap(m[1].replace(/\s+/g,' ')),m:{}};sem[sem.length-1].push(d);c=null;return;}
+    if(m=l.match(DR)){if(!sem.length)sem.push([]);if(+(m[1].match(/\d+/)||[0])[0]===1&&sem[sem.length-1].length)sem.push([]);d={t:cap(m[1].replace(/\s+/g,' ')),m:{}};sem[sem.length-1].push(d);c=null;return;}
     if(m=l.match(ML)){
       if(!d){if(!sem.length)sem.push([]);d={t:'Día 1',m:{}};sem[sem.length-1].push(d);}
       const k=cap(m[1].replace(/\s+/g,' '));if(!lab.includes(k))lab.push(k);c=d.m[k]={n:m[2].trim(),det:''};return;
