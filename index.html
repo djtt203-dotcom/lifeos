@@ -1117,31 +1117,60 @@ const COMPRAS=[
 {'Proteínas':'Pechuga de pollo (~1 kg)|Huevo (24 pzas)|Bistec bola (400 g)|Res deshebrada (150 g)|Pasta codito (100 g)','Lácteos':'Queso manchego|Queso mozzarella light|Queso oaxaca|Yogur natural 0%|Yogur griego','Frutas':'Plátano|Mango|Ciruela|Guayaba|Granada china|Toronja|Tuna|Mandarina|Cerezas|Melón','Verduras':'Jitomate|Champiñones|Chile poblano|Elote|Nopal|Espinacas|Lechuga|Cebolla|Ajo','Cereales':'Tortillas de maíz|Tostadas horneadas|Pasta codito','Grasas':'Aceite de oliva|Mantequilla|Aceite en aerosol|Crema ácida','Otros':'Chile chipotle|Aderezo light|Crema light|Limón'},
 {'Proteínas':'Pechuga de pollo (~900 g)|Huevo (24 pzas)|Chuleta de cerdo ahumada (300 g)|Carne de res para caldo (240 g)|Carne molida (240 g)|Tocino','Lácteos':'Queso oaxaca|Queso panela|Queso cottage|Yogur griego|Requesón','Frutas':'Pera|Durazno|Fresas|Naranja|Papaya|Sandía|Piña|Uva roja|Zarzamora|Kiwi','Verduras':'Espinacas|Champiñones|Jitomate|Pimiento|Papa cambray|Calabacita|Lechuga|Cebolla|Apio|Germinado de soya','Cereales':'Tostadas horneadas|Arroz integral|Tortillas de maíz','Grasas':'Aceite de oliva|Aceite en aerosol|Vinagre de manzana|Nueces|Ajonjolí','Otros':'Salsa de soya|Aderezo light|Aguacate|Limón'},
 {'Proteínas':'Pescado blanco (mero/tilapia/mojarra, ~1.2 kg)|Camarón crudo mediano (~2 kg)|Carne molida (240 g)|Bistec bola (300 g)|Huevo (12 pzas)','Lácteos':'Queso oaxaca|Requesón|Yogur natural 0%|Yogur griego','Frutas':'Plátano|Mango|Ciruela|Guayaba|Granada china|Toronja|Tuna|Mandarina|Cerezas|Melón','Verduras':'Calabacita|Jitomate|Aceituna verde|Apio|Pepino|Zanahoria|Papa|Cebolla|Jalapeño|Cilantro|Espinacas|Chile verde|Champiñones|Lechuga','Cereales':'Tostadas horneadas/deshidratadas|Arroz cocido','Grasas':'Aceite de oliva|Mantequilla|Aceite en aerosol','Otros':'Chile chipotle adobado|Crema light|Jengibre|Perejil|Ajo|Limón'}];
+const SNK=/colaci|snack|merienda|media/i;
+let _dp;
+function plan(){const m=state.menu;if(m.plan)return m.plan;
+  return _dp||(_dp={nombre:'Plan de ejemplo',labels:MN_L.slice(),nota:'Las colaciones son solo si hay apetito. Porciones por persona, para 2 personas. 3 L de agua al día, sin líquidos junto con la comida (30–60 min antes o después). Máximo 2 tortillas de maíz al día.',
+    sem:MENU.map(w=>w.map((d,i)=>({t:'Día '+(i+1),c:d.map(x=>{const[n,det]=(MN_R[x]||x).split('|');return{n,det:det||''};})})))});}
+function plEdit(){const m=state.menu;if(!m.plan){m.plan=JSON.parse(JSON.stringify(plan()));m.plan.base='def';}return m.plan;}
 function renderMenu(){
-  const m=state.menu,w=m.sem;
+  const m=state.menu,P=plan(),w=Math.min(m.sem||1,P.sem.length)||1;
   let h=`<div class="page-title">Planificación de comidas</div>
-  <div class="fin-tabs">${[1,2,3,4].map(n=>`<button class="fin-tab${w===n?' active':''}" onclick="menuSet('sem',${n})">Semana ${n}</button>`).join('')}</div>
+  ${P.sem.length>1?`<div class="fin-tabs">${P.sem.map((_,k)=>k+1).map(n=>`<button class="fin-tab${w===n?' active':''}" onclick="menuSet('sem',${n})">Semana ${n}</button>`).join('')}</div>`:''}
   <div class="fin-tabs"><button class="fin-tab${m.vista==='menu'?' active':''}" onclick="menuSet('vista','menu')">📅 Menú</button><button class="fin-tab${m.vista==='compras'?' active':''}" onclick="menuSet('vista','compras')">🛒 Lista de compras</button></div>`;
   h+=m.vista==='menu'?menuDias(w):menuCompras(w);
   document.getElementById('page-menu').innerHTML=h;
 }
 function menuSet(k,v){state.menu[k]=v;save('menu');renderMenu();}
 function menuDias(w){
-  let h='';
-  MENU[w-1].forEach((d,i)=>{
-    h+=`<div class="card mn-day"><div class="mn-day-t">Día ${i+1}</div>`;
-    d.forEach((x,j)=>{
-      const[n,det]=(MN_R[x]||x).split('|');
-      h+=`<div class="mn-row${j%2?' snack':''}"><div class="mn-l">${MN_L[j]}</div><div><div class="mn-n">${n}</div>${det?`<div class="mn-d">${det}</div>`:''}</div></div>`;
+  const P=plan(),ds=P.sem[w-1]||[];
+  let h=`<div class="card mb12"><div class="label mb8">${escH(P.nombre||'Mi plan')}</div><button class="btn" style="width:100%;margin-bottom:8px" onclick="openSubirPlan()">📷 Subir mi plan (foto o PDF)</button><div class="flex gap8"><button class="btn sm" style="flex:1" onclick="menuAddDia(${w})">＋ Día</button><button class="btn sm" style="flex:1" onclick="menuAddSem()">＋ Semana</button><button class="btn sm" style="flex:1" onclick="planBlanco()">✏️ En blanco</button></div>${state.menu.plan?`<button class="btn sm" style="width:100%;margin-top:8px" onclick="planEjemplo()">Volver al plan de ejemplo</button>`:''}</div>`;
+  if(!ds.length)h+='<div class="card"><div class="f13 c-muted">Esta semana no tiene días. Usa ＋ Día.</div></div>';
+  ds.forEach((d,i)=>{
+    h+=`<div class="card mn-day"><div class="flex-between"><div class="mn-day-t">${escH(d.t)}</div><button class="del-btn" onclick="menuDelDia(${w},${i})" aria-label="Quitar día">🗑</button></div>`;
+    d.c.forEach((x,j)=>{
+      const lb=P.labels[j]||'Comida';
+      h+=`<div class="mn-row${SNK.test(lb)?' snack':''}" onclick="editComida(${w},${i},${j})" style="cursor:pointer"><div class="mn-l">${escH(lb)}</div><div style="flex:1;min-width:0"><div class="mn-n">${escH(x.n)||'<span class="c-muted">Toca para agregar</span>'}</div>${x.det?`<div class="mn-d">${escH(x.det)}</div>`:''}</div><span class="c-muted" style="font-size:12px">✎</span></div>`;
     });
     h+='</div>';
   });
-  return h+`<div class="f12 c-muted" style="line-height:1.6;padding:0 4px 8px">Las colaciones son solo si hay apetito. Porciones por persona, para 2 personas. 3 L de agua al día, sin líquidos junto con la comida (30–60 min antes o después). Máximo 2 tortillas de maíz al día.</div>`;
+  return h+(P.nota?`<div class="f12 c-muted" style="line-height:1.6;padding:0 4px 8px">${escH(P.nota)}</div>`:'')+`<div class="f12 c-muted" style="padding:0 4px 8px">Toca cualquier comida para cambiarla.</div>`;
 }
+function recetas(){const P=plan(),seen={},o=[];P.sem.forEach(w=>w.forEach(d=>d.c.forEach(x=>{if(x.n&&!seen[x.n]){seen[x.n]=1;o.push(x);}})));
+  Object.values(MN_R).forEach(t=>{const[n,det]=t.split('|');if(!seen[n]){seen[n]=1;o.push({n,det:det||''});}});return o;}
+function editComida(w,i,j){
+  const P=plan(),d=P.sem[w-1][i],x=d.c[j];window._rc=recetas();
+  document.getElementById('modal-title').textContent=d.t+' · '+(P.labels[j]||'Comida');
+  document.getElementById('modal-body').innerHTML=`<div class="form-row"><div class="sublabel">Cambiar por una receta guardada</div><select class="inp" onchange="pickReceta(this.value)"><option value="">Elegir…</option>${window._rc.map((r,k)=>`<option value="${k}">${escH(r.n)}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="sublabel">Nombre</div><input class="inp" id="mc-n" value="${escH(x.n).replace(/"/g,'&quot;')}" placeholder="Ej: Pollo a la plancha"/></div>
+    <div class="form-row"><div class="sublabel">Detalle / ingredientes</div><textarea class="inp" id="mc-d" rows="3">${escH(x.det)}</textarea></div>
+    <div class="modal-actions"><button class="btn" onclick="saveComida(${w},${i},${j})" style="padding:11px">Guardar</button></div>`;
+  openModal();
+}
+function pickReceta(k){const r=(window._rc||[])[k];if(!r)return;document.getElementById('mc-n').value=r.n;document.getElementById('mc-d').value=r.det;}
+function saveComida(w,i,j){const x=plEdit().sem[w-1][i].c[j];x.n=document.getElementById('mc-n').value.trim();x.det=document.getElementById('mc-d').value.trim();closeModal();saveMenu();}
+function menuAddDia(w){const P=plEdit(),ds=P.sem[w-1];ds.push({t:'Día '+(ds.length+1),c:P.labels.map(()=>({n:'',det:''}))});saveMenu();}
+function menuDelDia(w,i){if(confirm('¿Quitar este día?')){plEdit().sem[w-1].splice(i,1);saveMenu();}}
+function menuAddSem(){const P=plEdit();P.sem.push([]);state.menu.sem=P.sem.length;saveMenu();}
+function nuevoPlan(p){const m=state.menu;if(m.plan&&!confirm('Esto reemplaza tu plan actual. ¿Continuar?'))return false;m.plan=p;m.lstC={};m.sem=1;m.hoy={sem:1,dia:1};save('menu');return true;}
+function planBlanco(){const lab=['Desayuno','Colación 1','Comida','Colación 2','Cena'];
+  if(nuevoPlan({nombre:'Mi plan',labels:lab,nota:'',sem:[['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'].map(t=>({t,c:lab.map(()=>({n:'',det:''}))}))]}))renderMenu();}
+function planEjemplo(){if(!confirm('Volver al plan de ejemplo. Se pierden los cambios de tu plan. ¿Continuar?'))return;delete state.menu.plan;state.menu.sem=1;state.menu.hoy={sem:1,dia:1};saveMenu();}
+function lk(){const p=state.menu.plan;return p&&!p.base?'lstC':'lst';}
 function lista(w){
-  const m=state.menu;m.lst=m.lst||{};
-  if(!m.lst[w])m.lst[w]=Object.entries(COMPRAS[w-1]).map(([c,s])=>({c,items:s.split('|').map(t=>({t,ok:false}))}));
-  return m.lst[w];
+  const m=state.menu,k=lk();m[k]=m[k]||{};
+  if(!m[k][w])m[k][w]=k==='lst'?Object.entries(COMPRAS[w-1]||{}).map(([c,t])=>({c,items:t.split('|').map(x=>({t:x,ok:false}))})):[];
+  return m[k][w];
 }
 function menuCompras(w){
   const L=lista(w);let tot=0,ok=0;
@@ -1164,16 +1193,16 @@ function delCompra(w,g,i){lista(w)[g].items.splice(i,1);saveMenu();}
 function addCat(w){const c=prompt('Nombre de la categoría');if(c&&c.trim()){lista(w).push({c:c.trim(),items:[]});saveMenu();}}
 function delCat(w,g){if(confirm('¿Quitar esta categoría y sus artículos?')){lista(w).splice(g,1);saveMenu();}}
 function resetCompras(w){lista(w).forEach(g=>g.items.forEach(i=>i.ok=false));saveMenu();}
-function restaurarLista(w){if(confirm('¿Volver a la lista original de la semana '+w+'? Se pierden tus cambios.')){delete state.menu.lst[w];saveMenu();}}
+function restaurarLista(w){if(confirm('¿Volver a la lista original de la semana '+w+'? Se pierden tus cambios.')){delete state.menu[lk()][w];saveMenu();}}
 
 // ══ EXTRAS: HOY, AGUA, RESUMEN, PRESUPUESTO ═════════════════════════════════
 const AGUA_META=12; // vasos de 250 ml = 3 L
 function diasAtras(n){return ymd(new Date(Date.now()-n*864e5));}
 function gastoPorCat(){const mes=today().slice(0,7),o={};state.txs.filter(t=>t.tipo==='gasto'&&t.fecha.startsWith(mes)).forEach(t=>{o[t.categoria]=(o[t.categoria]||0)+t.monto;});return o;}
 function extrasInicio(){
-  const td=today(),m=state.menu,hy=m.hoy||{sem:1,dia:1},dia=MENU[hy.sem-1][hy.dia-1];
+  const td=today(),m=state.menu,P=plan(),hy=m.hoy||{sem:1,dia:1},dia=((P.sem[hy.sem-1]||[])[hy.dia-1]||{}).c||[];
   let h=`<div class="card teal"><div class="flex-between mb8"><span class="f14 fw7 c-main">🍽️ Hoy toca</span><div class="flex gap6" style="align-items:center"><button class="btn sm" onclick="hoyMove(-1)">◀</button><span class="f12 c-teal fw7">Sem ${hy.sem} · Día ${hy.dia}</span><button class="btn sm" onclick="hoyMove(1)">▶</button></div></div>`;
-  dia.forEach((x,j)=>{h+=`<div class="mn-row${j%2?' snack':''}"><div class="mn-l">${MN_L[j]}</div><div class="mn-n">${(MN_R[x]||x).split('|')[0]}</div></div>`;});
+  dia.forEach((x,j)=>{if(x.n)h+=`<div class="mn-row${SNK.test(P.labels[j]||'')?' snack':''}"><div class="mn-l">${escH(P.labels[j]||'')}</div><div class="mn-n">${escH(x.n)}</div></div>`;});
   h+='</div>';
   h+=aguaMini();
   const pc=gastoPorCat(),av=Object.entries(state.presup).filter(([c,l])=>l>0&&(pc[c]||0)/l>=.8);
@@ -1185,7 +1214,7 @@ function extrasInicio(){
   h+=`<div class="card purple"><div class="f14 fw7 c-main mb10">📅 Últimos 7 días</div><div class="grid3" style="margin-bottom:0"><div class="text-center"><div class="f20 fw8 c-teal">${hp}%</div><div class="f11 c-muted">Hábitos</div></div><div class="text-center"><div class="f20 fw8 c-red">${fmt(gasto)}</div><div class="f11 c-muted">Gastado</div></div><div class="text-center"><div class="f20">${an}</div><div class="f11 c-muted">Ánimo (${en.length})</div></div></div></div>`;
   return h;
 }
-function hoyMove(d){const m=state.menu,hy=m.hoy||{sem:1,dia:1},i=((hy.sem-1)*5+hy.dia-1+d+20)%20;m.hoy={sem:Math.floor(i/5)+1,dia:i%5+1};save('menu');renderInicio();}
+function hoyMove(d){const m=state.menu,hy=m.hoy||{sem:1,dia:1},fl=[];plan().sem.forEach((w,a)=>w.forEach((_,b)=>fl.push([a+1,b+1])));if(!fl.length)return;let i=fl.findIndex(x=>x[0]===hy.sem&&x[1]===hy.dia);if(i<0)i=0;const n=fl[(i+d+fl.length)%fl.length];m.hoy={sem:n[0],dia:n[1]};save('menu');renderInicio();}
 function aguaSet(){}
 function presupCard(){
   const pc=gastoPorCat();
@@ -1318,6 +1347,75 @@ async function scanTicket(inp){
     set('tx-monto',r.tot||'');set('tx-fecha',r.fecha);set('tx-nota',r.nombre);set('tx-cat',r.cat);
     st.textContent=r.tot?`Listo: ${fmt(r.tot)}${r.fecha?' · '+r.fecha:''}. Revisa los datos antes de guardar.`:'Leí el ticket pero no encontré el total. Captúralo a mano.';
   }catch(e){st.textContent='No pude leer el ticket (¿sin internet?). Captura los datos a mano.';}
+}
+
+// ══ SUBIR PLAN DE COMIDAS (foto / PDF) ═════════════════════════════════════
+function loadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve();
+  const B='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+  return new Promise((ok,no)=>{const x=document.createElement('script');x.src=B+'pdf.min.js';x.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=B+'pdf.worker.min.js';ok();};x.onerror=no;document.head.appendChild(x);});
+}
+async function leerPdf(f,st){
+  st.textContent='Abriendo PDF…';await loadPdfJs();
+  const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,N=Math.min(pdf.numPages,8);let out='';
+  for(let p=1;p<=N;p++){
+    st.textContent='Leyendo PDF… página '+p+' de '+N;
+    const pg=await pdf.getPage(p),tc=await pg.getTextContent(),rows={};
+    tc.items.forEach(it=>{const y=Math.round(it.transform[5]/4);(rows[y]=rows[y]||[]).push(it);});
+    let t=Object.keys(rows).map(Number).sort((a,b)=>b-a).map(y=>rows[y].sort((a,b)=>a.transform[4]-b.transform[4]).map(i=>i.str).join(' ')).join('\n');
+    if(t.replace(/\s/g,'').length<40){
+      await loadOcr();const vp=pg.getViewport({scale:2}),c=document.createElement('canvas');c.width=vp.width;c.height=vp.height;
+      await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;
+      t=(await Tesseract.recognize(c,'spa')).data.text;
+    }
+    out+=t+'\n';
+  }
+  return out;
+}
+async function leerPlan(inp){
+  const fs=[...inp.files],st=document.getElementById('plan-st'),ta=document.getElementById('plan-txt');if(!fs.length)return;
+  let out='';
+  try{
+    for(const f of fs){
+      if(f.type==='application/pdf'||/\.pdf$/i.test(f.name))out+=await leerPdf(f,st)+'\n';
+      else{st.textContent='Preparando lector…';await loadOcr();st.textContent='Leyendo imagen…';out+=(await Tesseract.recognize(await ticketImg(f),'spa')).data.text+'\n';}
+    }
+    ta.value=out.trim();planCount();
+    st.textContent='Listo. Revisa el texto: corrige lo que se leyó mal y usa líneas como "Día 1" y "Desayuno: …".';
+  }catch(e){st.textContent='No pude leer el archivo (¿sin internet?). Puedes pegar o escribir tu plan abajo.';}
+}
+function parsePlan(txt){
+  const ML=/^(desayuno|colaci[oó]n(?:\s*\d)?|almuerzo|comida|merienda|snack|cena|media\s*ma[nñ]ana|media\s*tarde|pre.?entreno|post.?entreno)\b\s*[:.\-–—]*\s*(.*)$/i,
+    DR=/^(d[ií]a\s*\d+|lunes|martes|mi[eé]rcoles|jueves|viernes|s[aá]bado|domingo)\b\s*[:.\-–—]*\s*(.*)$/i,
+    WR=/^semana\s*\d+/i,cap=t=>t.charAt(0).toUpperCase()+t.slice(1).toLowerCase();
+  const sem=[],lab=[];let d=null,c=null;
+  txt.split('\n').map(l=>l.replace(/^[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9]+/,'').trim()).filter(Boolean).forEach(l=>{
+    let m;
+    if(WR.test(l)){sem.push([]);d=c=null;return;}
+    if(m=l.match(DR)){if(!sem.length)sem.push([]);d={t:cap(m[1].replace(/\s+/g,' ')),m:{}};sem[sem.length-1].push(d);c=null;return;}
+    if(m=l.match(ML)){
+      if(!d){if(!sem.length)sem.push([]);d={t:'Día 1',m:{}};sem[sem.length-1].push(d);}
+      const k=cap(m[1].replace(/\s+/g,' '));if(!lab.includes(k))lab.push(k);c=d.m[k]={n:m[2].trim(),det:''};return;
+    }
+    if(c){if(!c.n)c.n=l;else c.det+=(c.det?' ':'')+l;}
+  });
+  return{labels:lab,sem:sem.map(w=>w.map(x=>({t:x.t,c:lab.map(k=>x.m[k]||{n:'',det:''})}))).filter(w=>w.length)};
+}
+function planCount(){
+  const p=parsePlan(document.getElementById('plan-txt').value),n=p.sem.reduce((a,w)=>a+w.length,0);
+  document.getElementById('plan-cnt').textContent=n&&p.labels.length?`Detecté ${n} día(s) y ${p.labels.length} comida(s) por día: ${p.labels.join(', ')}.`:'Aún no detecto días ni comidas. Usa líneas como "Día 1" o "Lunes" y "Desayuno: …".';
+}
+function openSubirPlan(){
+  document.getElementById('modal-title').textContent='Mi plan de comidas';
+  document.getElementById('modal-body').innerHTML=`<div class="scan-box"><label class="btn scan-btn">📷 Subir foto o PDF<input type="file" accept="image/*,application/pdf" multiple hidden onchange="leerPlan(this)"/></label><div id="plan-st" class="f11 c-muted mt6">Sube tu plan y lo leo por ti (necesita internet). También puedes pegarlo o escribirlo abajo.</div></div>
+    <div class="form-row"><div class="sublabel">Texto del plan</div><textarea class="inp" id="plan-txt" rows="9" oninput="planCount()" placeholder="Día 1&#10;Desayuno: Huevo con verduras&#10;Comida: Pollo a la plancha&#10;Cena: Ensalada&#10;Día 2&#10;…"></textarea><div id="plan-cnt" class="f11 c-muted mt4"></div></div>
+    <div class="modal-actions"><button class="btn" onclick="crearPlan()" style="padding:11px">Crear mi plan</button></div>`;
+  openModal();planCount();
+}
+function crearPlan(){
+  const p=parsePlan(document.getElementById('plan-txt').value);
+  if(!p.sem.length||!p.labels.length){alert('No detecté días y comidas. Usa líneas como "Día 1" y "Desayuno: …".');return;}
+  if(nuevoPlan({nombre:'Mi plan',labels:p.labels,sem:p.sem,nota:''})){closeModal();renderMenu();}
 }
 
 // ══ MODAL ═══════════════════════════════════════════════════════════════════
